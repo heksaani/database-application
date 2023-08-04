@@ -14,3 +14,7 @@ Features of the application include:
 - Leader can set a deadline for tasks
 - Leader can see how much time a task took to complete
 - Leader can see how much time a user spent on tasks
+
+Update on 4th of Auguts:
+Registration does not work, something wrong with the connection to database.
+I don't probably know how to define the .env file correctly. Help needed.
