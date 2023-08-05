@@ -1,4 +1,4 @@
-'''functions mostly concerning users'''
+"""User management functions"""
 import secrets
 from sqlalchemy import text
 from flask import session

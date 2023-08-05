@@ -1,6 +1,7 @@
 """This module contains the routes for the application."""
-from flask import render_template, request, redirect, session
+from flask import render_template, request, redirect, session, abort
 import users
+import tasks
 from app import app
 
 @app.route("/")
@@ -47,7 +48,7 @@ def register():
         if users.register(username, password1, leader):
             return render_template("first_page.html", username=username, role=status)
 
-        return render_template("error.html", message="Registaation failed, username already exists")
+        return render_template("error.html", message="Registration failed, username already exists")
 
 
     return render_template("error.html", message="Unknown error")
@@ -58,6 +59,26 @@ def logout():
     """Logout handler"""
     users.logout()
     return redirect("/")
+
+
+@app.route("/createTask", methods=["GET", "POST"])
+def create_task():
+    """Task creation handler"""
+    if request.method == "GET":
+        return render_template("createTask.html")
+    if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
+        name = request.form["name"]
+        desc = request.form["description"]
+        status = request.form["status"]
+        deadline = request.form["deadline"]
+
+        if tasks.create_task(name, desc, status, deadline):
+            return redirect("/")
+
+
+    return render_template("error.html", message="Unknown error")
 
 
 @app.route("/error")
