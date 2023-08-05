@@ -1,10 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
 <title>Frontpage</title><br>
 
 {% if session.username %}
     <p>You have logged in as {{ session.username }}</p><br><br>
+    {% if session.role == "leader" %}
+        <a href="/createGroup"> Create a new group</a>  <br><br>
+        <a href="/allGroups">All groups</a><br><br>
+        <a href="/addUserToGroup">Add user to group</a><br><br>
+        <a href="/addTaskToGroup">Add task to group</a><br><br>
+    {% endif %}
     <a href="/createTask">Create a new task</a><br><br>
     <a href="/allTasks">All tasks</a><br><br>
-    <a href="/UserTasks">Your tasks</a><br><br>
+    <a href="/userTasks">Your tasks</a><br><br>
     <a href="/logout">Log out</a>
 {% else %}
 <div class="loginForm">
@@ -12,3 +20,4 @@
     <a href="/register">Register</a>
 </div>
 {% endif %}
+{% endblock %}

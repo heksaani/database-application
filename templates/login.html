@@ -1,3 +1,5 @@
+{% extends "layout.html" %}
+{% block content %}
 <title>Log in</title>
 {% if session.username %}
 Already logged in<br>
@@ -16,3 +18,5 @@ Already logged in<br>
     </form>
 </div>
 {% endif %}
+{% endblock %}
+

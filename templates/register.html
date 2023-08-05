@@ -12,6 +12,7 @@
         <input type="radio" name="type" value=0> User
         <input type="radio" name="type" value=1> Leader
     </p>
+    <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
     <input type="submit" value="Create account">
 </form>
 {% endblock %}
