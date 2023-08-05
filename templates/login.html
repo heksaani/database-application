@@ -1,10 +1,18 @@
-{% extends "layout.html" %}
-{% block title %}Log in{% endblock %}
-{% block content %}
-<h2>Log in</h2>
-<form action="/login" method="POST">
-Username: <input type="text" name="username"> <br>
-Password: <input type="password" name="password"> <br>
-<input type="submit" value="Log in">
-</form>
-{% endblock %}
+<title>Log in</title>
+{% if session.username %}
+Already logged in<br>
+<a href="/">Front page</a>
+{% else %}
+<br>
+<div class="loginForm">
+    <form action="/login" method="POST">
+        <p>Username:<br>
+            <input type="text" name="username">
+        </p>
+        <p>Password:<br>
+            <input type="password" name="password">
+        </p>
+        <input type="submit" value="Log in">
+    </form>
+</div>
+{% endif %}
