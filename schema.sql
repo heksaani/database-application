@@ -8,12 +8,12 @@ CREATE TABLE Users (
 CREATE TABLE Groups (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
-    leader_id INTEGER REFERENCES Users
+    leader_id INTEGER REFERENCES Users ON DELETE CASCADE
 );
 
 CREATE TABLE UserGroups (
-    user_id INTEGER REFERENCES Users,
-    group_id INTEGER REFERENCES Groups,
+    user_id INTEGER REFERENCES Users ON DELETE CASCADE,
+    group_id INTEGER REFERENCES Groups ON DELETE CASCADE,
     PRIMARY KEY (user_id, group_id)
 );
 
@@ -21,21 +21,19 @@ CREATE TABLE Tasks (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     description TEXT,
-    status TEXT CHECK(status IN ('completed', 'in progress', 'not started, late')) DEFAULT 'not started',
-    creator_id INTEGER REFERENCES Users,
-    assignee_id INTEGER REFERENCES Users,
-    group_id INTEGER REFERENCES Groups,
-    parent_task_id INTEGER REFERENCES Tasks,
-    deadline TIMESTAMP,
-    time_to_complete INTERVAL
+    status TEXT,
+    creator_id INTEGER REFERENCES Users ON DELETE CASCADE,
+    assignee_id INTEGER REFERENCES Users ON DELETE CASCADE,
+    group_id INTEGER REFERENCES Groups ON DELETE CASCADE,
+    deadline DATE
 );
 
 CREATE TABLE Comments (
     id SERIAL PRIMARY KEY,
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
-    task_id INTEGER REFERENCES Tasks,
-    user_id INTEGER REFERENCES Users
+    task_id INTEGER REFERENCES Tasks ON DELETE CASCADE,
+    user_id INTEGER REFERENCES Users ON DELETE CASCADE
 );
 
 CREATE TABLE TaskTime (
