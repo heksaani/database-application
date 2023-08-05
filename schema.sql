@@ -1,47 +1,47 @@
-CREATE TABLE users (
+CREATE TABLE Users (
     id SERIAL PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
-    is_leader BOOLEAN DEFAULT FALSE
+    role BOOLEAN NOT NULL DEFAULT FALSE
 );
 
-CREATE TABLE groups (
+CREATE TABLE Groups (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
-    leader_id INTEGER REFERENCES users
+    leader_id INTEGER REFERENCES Users
 );
 
-CREATE TABLE user_groups (
-    user_id INTEGER REFERENCES users,
-    group_id INTEGER REFERENCES groups,
+CREATE TABLE UserGroups (
+    user_id INTEGER REFERENCES Users,
+    group_id INTEGER REFERENCES Groups,
     PRIMARY KEY (user_id, group_id)
 );
 
-CREATE TABLE tasks (
+CREATE TABLE Tasks (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     description TEXT,
-    status TEXT CHECK(status IN ('completed', 'in_progress', 'not_started')) DEFAULT 'not_started',
-    creator_id INTEGER REFERENCES users,
-    assignee_id INTEGER REFERENCES users,
-    group_id INTEGER REFERENCES groups,
-    parent_task_id INTEGER REFERENCES tasks,
+    status TEXT CHECK(status IN ('completed', 'in progress', 'not started, late')) DEFAULT 'not started',
+    creator_id INTEGER REFERENCES Users,
+    assignee_id INTEGER REFERENCES Users,
+    group_id INTEGER REFERENCES Groups,
+    parent_task_id INTEGER REFERENCES Tasks,
     deadline TIMESTAMP,
     time_to_complete INTERVAL
 );
 
-CREATE TABLE comments (
+CREATE TABLE Comments (
     id SERIAL PRIMARY KEY,
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
-    task_id INTEGER REFERENCES tasks,
-    user_id INTEGER REFERENCES users
+    task_id INTEGER REFERENCES Tasks,
+    user_id INTEGER REFERENCES Users
 );
 
-CREATE TABLE user_task_time (
+CREATE TABLE TaskTime (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users,
-    task_id INTEGER REFERENCES tasks,
+    user_id INTEGER REFERENCES Users,
+    task_id INTEGER REFERENCES Tasks,
     time_spent INTERVAL,
     logged_at TIMESTAMP DEFAULT NOW()
 );
