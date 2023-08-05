@@ -1,49 +1,66 @@
-from app import app
+"""This module contains the routes for the application."""
+from flask import render_template, request, redirect, session
 import users
-from datetime import datetime, timedelta
-from flask import render_template, request, request, redirect
+from app import app
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route("/")
 def index():
-    return render_template('index.html')
+    """Index handler"""
+    return render_template("index.html")
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    """Login handler"""
     if request.method == "GET":
         return render_template("login.html")
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        if users.login(username, password):
-            return redirect("/")
-        else:
-            return render_template("error.html", message="Wrong username or password")
+
+    if users.login(username, password):
         return redirect("/")
 
-@app.route("/logout")
-def logout():
-    users.logout()
-    return redirect("/")
+    return render_template("error.html", message="Wrong credentials")
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    """Registration handler"""
     if request.method == "GET":
         return render_template("register.html")
-    
     if request.method == "POST":
         username = request.form["username"]
-        if len(username) < 1 or len(username) > 20:
-            return render_template("error.html", message="Username must be 1-20 characters long")
-        
         password1 = request.form["password1"]
         password2 = request.form["password2"]
         if password1 != password2:
             return render_template("error.html", message="Passwords do not match")
-        if password1 == "":
-            return render_template("error.html", message="Password cannot be empty")
-        if users.register(username, password1):
-            return redirect("/")
-        
-        else:
-            return render_template("error.html", message="Registration failed")
-        return redirect("/")
+
+        role = int(request.form["type"])
+        status = "user"
+        leader = False
+
+        if role == 1:
+            status = "leader"
+            leader = True
+
+        if users.register(username, password1, leader):
+            return render_template("first_page.html", username=username, role=status)
+
+        return render_template("error.html", message="Registaation failed, username already exists")
+
+
+    return render_template("error.html", message="Unknown error")
+
+
+@app.route("/logout")
+def logout():
+    """Logout handler"""
+    users.logout()
+    return redirect("/")
+
+
+@app.route("/error")
+def error():
+    """Error handler"""
+    return render_template("error.html")
