@@ -5,20 +5,13 @@
     <form action="/createTask" method="POST">
         <h1>Create a task</h1>
         <p>Task name:</p>
-        <input type="text" name="taskName" minlength="1" maxlength="50" required><br>
+        <input type="text" name="name" minlength="1" maxlength="50" required><br>
         <p>Task description:</p>
-        <input type="text" name="taskDescription" minlength="1" maxlength="200"><br>
+        <input type="text" name="description" maxlength="300"><br>
         <p>Task deadline:</p>
-        <input type="date" name="taskDeadline" required><br>
-        <p>Task status:</p>
-        <input type="radio" name="taskStatus" value=0 required> Open
-        <input type="radio" name="taskStatus" value=1 required> In progress
-        <input type="radio" name="taskStatus" value=2 required> Done<br><br>
+        <input type="date" name="deadline" required><br>
+        <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
         <input type="submit" value="Create task">
-        {% if session.role == "leader" %}
-        <p>Assign task to user:</p>
-        <input type="text" name="taskUser" minlength="1" maxlength="50"><br>
-        {% endif %}
     </form>
 {% else %}
     <p>You are not logged in</p>
