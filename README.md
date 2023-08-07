@@ -17,3 +17,18 @@ Features of the application include:
 Currently working features:
 1. Registration, login
 2. Task creation
+
+How to use (local):
+Clone the repository to your machine and move to its root folder.
+Create an .env file create an .env file in the folder and set it as content:\
+DATABASE_URL=postgresql+psycopg2://
+SECRET_KEY=87dk98hlloiyuh
+Next, activate the virtual environment and install the application's dependencies using the commands
+
+$ python3 -m venv venv
+
+$ source venv/bin/activate
+
+$ pip install -r ./requirements.txt
+Then run flask using command 
+$ flask run 
