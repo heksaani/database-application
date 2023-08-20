@@ -1,3 +1,5 @@
+{% extends "layout.html" %} 
+{% block content %}
 <title>Create new task</title>
 
 {% if session.username %}
@@ -17,3 +19,6 @@
     <p>You are not logged in</p>
     <a href="/login">Log in</a>
 {% endif %}
+</div>
+{% endblock %}
+```
