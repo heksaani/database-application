@@ -1,8 +1,8 @@
 """Functions to handle tasks."""
+#import datetime
 from sqlalchemy import text
 from flask import session
 import users
-import datetime
 from db import db
 #import users
 
@@ -35,19 +35,42 @@ def create_task(name, description, status, creator_id, assignee_id, group_id, de
         return False
 
 def get_tasks_by_user():
-    """Function to get tasks by user"""
+    """Function to get ALL tasks by user"""
     user_id = users.user_id()
-    try:
-        sql = text("SELECT T.id, T.name FROM Tasks T " \
+    sql = text("SELECT T.id, T.name FROM Tasks T " \
            "WHERE T.creator_id = :user_id OR T.assignee_id = :user_id " \
            "ORDER BY T.id")
-        result = db.session.execute(sql, {"user_id": user_id})
-        return result
-    except Exception as error:
-        print(f"Error getting tasks by user: {error}")
-        return False
+    result = db.session.execute(sql, {"user_id": user_id})
+    return result
 
 
+def get_task(task_id):
+    """Getting one task by id"""
+    try:
+        sql = text("SELECT * FROM Tasks WHERE id=:task_id")
+        result = db.session.execute(sql, {"task_id": task_id})
+        task_result = result.fetchone()
+        #task results as dictionary:
+        task_dict = {'id': task_result[0],
+                        'name': task_result[1],
+                        'description': task_result[2],
+                        'status': task_result[3],
+                        'creator_id': task_result[4],
+                        'assignee_id': task_result[5],
+                        'group_id': task_result[6],
+                        'deadline': task_result[7]
+                        }       
+        return task_dict
+    except Exception as sql_exception:
+        return sql_exception
+
+
+
+def task_name(task_id):
+    '''Get task name by id'''
+    sql = text("SELECT name FROM Tasks WHERE id=:task_id")
+    result = db.session.execute(sql, {"task_id":task_id})
+    return result.fetchone()[0]
 
 
 #leader functions

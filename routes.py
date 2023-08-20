@@ -4,6 +4,7 @@ import secrets
 from flask import render_template, request, redirect, session, abort
 import users
 import tasks
+import groups
 from app import app
 
 @app.route("/")
@@ -106,29 +107,24 @@ def create_task():
 def all_tasks():
     """List all tasks for the user logged in
     Here the user should see all tasks that are assigned to them in all groups
-    or the tasks that they has created
-    if the user is a leader, they should see all tasks in their groups"""
-    if users.isleader():
-        return redirect("/leaderTasks")
-    else:
-        task_list = tasks.get_tasks_by_user()
-        #projects.refresh_projects(user_projects)
-        return render_template('./allTasks.html', tasks=task_list)
+    or the tasks that they has created"""
+    task_list = tasks.get_tasks_by_user()
+    #projects.refresh_projects(user_projects)
+    return render_template('./allTasks.html', tasks=task_list)
 
 
+#one task page view
+@app.route("/task/<int:task_id>")
+def task(task_id):
+    """Main page for task"""
+    task_info = tasks.get_task(task_id)
+    #get info about user
+    user_info = {'id' : users.user_id(),
+                 'name' : users.username(),
+                 'role' : users.isleader()}
+    print(user_info)
+    return render_template('./task.html', task=task_info, date=datetime.now().date(), user=user_info)
 
-#@app.route("/task/<int:task_id>")
-#def course(course_id):
-#    """Course handler"""
-#    course = courses.course(course_id)
-#    if course is None:
-#        return render_template("error.html", message="No such course")
-#    return render_template("course.html", course=course)
-#in progress
-#@app.route("/createGroup", methods=["GET", "POST"])
-#def create_group():
-#    """Group creation handler"""
-#    print("Entered create_group route")
 
 @app.route("/error")
 def error():

@@ -1,9 +1,31 @@
-{% extends "layout.html" %} {% block content %}
+{% extends "layout.html" %} 
+{% block content %}
 
 {% if session.username %}
-<br>
-
-
-
+    <div class="task_mainpage"></div>
+    <br>
+    <p><strong>{{ task['name'] }}</strong></p>
+    <p>{{ task['description'] }}</p>
+    <p>
+        Deadline: {{ task['deadline'].day }} {{ task['deadline'].strftime("%B") }} 
+        {{ task['deadline'].year }} (in {{ (task['deadline']-date).days }} days)
+    </p>
+    <div class="edit_task">
+        <a href='/editTask/{{ task["id"] }}' class="task-edit-button">
+          <button>Edit task</button>
+        </a>
+    </div>
+    <div class="delete_task">
+        <a href='/deleteTask/{{ task["id"] }}' class="task-delete-button">
+          <button>Delete task</button>
+        </a>
+    </div>
+    <div class="back_to_tasks">
+        <a href='/allTasks' class="back-to-tasks-button">
+          <button>Back to tasks</button>
+        </a>
+{% else %}
+    <p>You are not logged in!</p>
+{% endif %}
 
 {% endblock %}
