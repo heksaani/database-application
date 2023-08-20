@@ -1,0 +1,11 @@
+{% extends "layout.html" %} 
+{% block content %}
+<title>Assign task</title>
+
+{% if session.username %} {% if session.role %}
+<select name="assignee">
+    {% for user in users %}
+        <option value="{{ user.id }}">{{ user.username }}</option>
+    {% endfor %}
+</select>
+

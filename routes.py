@@ -65,41 +65,36 @@ def logout():
 @app.route("/createTask", methods=["GET", "POST"])
 def create_task():
     """Task creation handler"""
-    print("Entered create_task route")  # Add this line
     if request.method == "GET":
-        return render_template("createTask.html")
+        leader_id = users.user_id()
+        group_list = list(groups.get_groups(leader_id))
+        users_in_groups = {}
+        for group in group_list:
+            users_in_groups[group.id] = groups.get_users(group.id)
+        return render_template("createTask.html", groups=group_list, users=users_in_groups)
+    
     if request.method == "POST":
-        print(request.form)  # Print the entire form data
-        try:
-            print(f"CSRF token: {session['csrf_token']}")  # Print the CSRF token
-            print(f"Form CSRF token: {request.form['csrf_token']}")  # Print the CSRF token
-            if session["csrf_token"] != request.form["csrf_token"]:
-                abort(403)
-        except KeyError as ex:
-            print(f"Error accessing CSRF token: {ex}")
-            return render_template("error.html", message="Error accessing CSRF token")
+
         name = request.form["name"]
         desc = request.form["description"]
         status = "Not started"
         deadline_str = request.form["deadline"]
-        print(f"Deadline string: {deadline_str}")  # Print the deadline string
-        try:
-            deadline = datetime.strptime(deadline_str, '%Y-%m-%d')
-        except Exception as ex:
-            print(f"Error parsing deadline: {ex}")
-            return render_template("error.html", message="Error parsing deadline")
-        try:
-            creator_id = users.user_id()
-            print(f"Creator id: {creator_id}")  # Print the creator id
-        except Exception as ex:
-            print(f"Error getting creator id: {ex}")
-            return render_template("error.html", message="Error getting creator id")
         group_id = None
-        assignee_id = creator_id
+        assignee_id = users.user_id()
         group_id = None
-        if tasks.create_task(name, desc, status, creator_id, assignee_id, group_id, deadline):
+        creator_id = users.user_id()
+
+        if tasks.create_task(name, desc, status, creator_id, assignee_id, group_id, deadline_str):
             return redirect("/")
     return render_template("error.html", message="Unknown error")
+
+@app.route("/assignTask/<int:group_id>", methods=["GET", "POST"])
+def assign_task(group_id):
+    if request.method == "GET":
+        users_in_group = groups.get_users(group_id)
+        render_template("assignTask.html", users=users_in_group)
+    elif request.method == "POST":
+        return
 
 @app.route("/allTasks")
 def all_tasks():
