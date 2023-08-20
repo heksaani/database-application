@@ -4,10 +4,10 @@
 
 {% if session.username %}
     <p>You have logged in as {{ session.username }}</p><br><br>
-    {% if session.role == "leader" %}
+    {% if session.role %}
         <a href="/createGroup"> Create a new group</a>  <br><br>
         <a href="/allGroups">All groups</a><br><br>
-        <a href="/addUserToGroup">Add user to group</a><br><br>
+        <a href="/addNewUser">Add new user to group</a><br><br>
         <a href="/addTaskToGroup">Add task to group</a><br><br>
     {% endif %}
     <a href="/createTask">Create a new task</a><br><br>
