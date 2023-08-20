@@ -1,7 +1,7 @@
 """Functions to handle tasks."""
 #import datetime
 from sqlalchemy import text
-from flask import session
+#from flask import session
 import users
 from db import db
 #import users

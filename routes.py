@@ -120,6 +120,24 @@ def task(task_id):
     return render_template('./task.html', task=task_info, date=datetime.now().date(), user=user_info)
 
 
+#edit task page view
+@app.route("/editTask/<int:task_id>", methods=["GET"])
+def edit_task(task_id):
+    """Edit task page"""
+    task_to_edit = tasks.get_task(task_id)
+    if not task:
+        return "Task not found", 404
+    task_to_edit.name = request.form['task_name']
+    task_to_edit.description = request.form['task_description']
+
+    # Check if current user is the creator before updating the deadline
+    if task.creator_id == session['user_id']:
+        task.deadline = request.form['deadline']  # Adjust based on how you handle date parsing
+
+    return redirect(('allTasks'))
+
+
+
 @app.route("/createGroup", methods=["GET", "POST"])
 def create_group():
     """Group creation handler"""
