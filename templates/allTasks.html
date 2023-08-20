@@ -2,8 +2,8 @@
 {% block content %}
 
 {% if session.username %}
+    {% if tasks and tasks|length > 0 %}
     <p>A list of your tasks:</p>
-    {% if tasks %} 
         {% for task in tasks %}
             <div class="user_task">
                 <a href="/task/{{ task.id }}">{{ task.name }}</a>
@@ -21,3 +21,4 @@
 {% endif %}
 
 {% endblock %}
+
