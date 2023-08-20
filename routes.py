@@ -1,16 +1,15 @@
 """This module contains the routes for the application."""
 from datetime import datetime
+import secrets
 from flask import render_template, request, redirect, session, abort
 import users
 import tasks
-import secrets
 from app import app
 
 @app.route("/")
 def index():
     """Index handler"""
     return render_template("index.html")
-
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -20,14 +19,12 @@ def login():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-    
         if users.login(username, password):
             # Generate a new CSRF token for the session
             session["csrf_token"] = secrets.token_urlsafe()
             return redirect("/")
         else:
             return render_template("error.html", message="Invalid username or password")
-
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -58,7 +55,6 @@ def register():
 
     return render_template("error.html", message="Unknown error")
 
-
 @app.route("/logout")
 def logout():
     """Logout handler"""
@@ -76,7 +72,7 @@ def create_task():
         print(request.form)  # Print the entire form data
         try:
             print(f"CSRF token: {session['csrf_token']}")  # Print the CSRF token
-            print(f"Form CSRF token: {request.form['csrf_token']}")  # Print the CSRF token from the form
+            print(f"Form CSRF token: {request.form['csrf_token']}")  # Print the CSRF token
             if session["csrf_token"] != request.form["csrf_token"]:
                 abort(403)
         except KeyError as ex:
@@ -105,6 +101,29 @@ def create_task():
             return redirect("/")
     return render_template("error.html", message="Unknown error")
 
+#project_page()
+@app.route("/allTasks")
+def all_tasks():
+    """List all tasks for the user logged in
+    Here the user should see all tasks that are assigned to them in all groups
+    or the tasks that they has created
+    if the user is a leader, they should see all tasks in their groups"""
+    if users.isleader():
+        return redirect("/leaderTasks")
+    else:
+        task_list = tasks.get_tasks_by_user()
+        #projects.refresh_projects(user_projects)
+        return render_template('./allTasks.html', tasks=task_list)
+
+
+
+#@app.route("/task/<int:task_id>")
+#def course(course_id):
+#    """Course handler"""
+#    course = courses.course(course_id)
+#    if course is None:
+#        return render_template("error.html", message="No such course")
+#    return render_template("course.html", course=course)
 #in progress
 #@app.route("/createGroup", methods=["GET", "POST"])
 #def create_group():

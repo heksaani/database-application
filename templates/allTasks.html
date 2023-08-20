@@ -1,27 +1,23 @@
-{% extends "layout.html" %} {% block content %}
-<title>All tasks</title>
+{% extends "layout.html" %}
+{% block content %}
 
 {% if session.username %}
-<br>
-<div class="course">
-    <a href="/">Front page</a>
-</div><br><br>
-{% for task in task_list %}
-<div class="task">
-    <h1>{{ task.name }}</h1>
-    <p>Task description: {{ task.taskDescription }}</p>
-    <p>Task deadline: {{ task.taskDeadline }}</p>
-    <p>Task status: {{ task.taskStatus }}</p>
-    <p>Task assigned to: {{ task.taskUser }}</p>
-    <p>Task created by: {{ task.taskCreator }}</p>
-    <p>Task created at: {{ task.taskCreatedAt }}</p>
-    <p>Task updated at: {{ task.taskUpdatedAt }}</p>
-    <p>Task id: {{ task.taskId }}</p>
-    <form action="/deleteTask" method="POST">
-        <input type="hidden" name="taskId" value="{{ task.taskId }}">
-        <input type="submit" value="Delete task">
-    </form>
-    <form action="/updateTask" method="POST">
-        <input type="hidden" name="taskId" value="{{ task.taskId }}">
-        <input type="submit" value="Update task">
-    </form>
+    <p>A list of your tasks:</p>
+    {% if tasks %} 
+        {% for task in tasks %}
+            <div class="user_task">
+                <a href="/task/{{ task.id }}">{{ task.name }}</a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No tasks found!</p>
+        <a href="/createTask">
+            <button name="create_newtask">New Task</button>
+        </a>
+    {% endif %}
+{% else %}
+    <p>You are not logged in!</p>
+    <a href="/login">Login</a> or <a href="/register">Register</a>
+{% endif %}
+
+{% endblock %}
