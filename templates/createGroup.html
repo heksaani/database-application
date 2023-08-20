@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+{% block content %}
+
+{% if session.username and session.role %} 
+
+    <div class="createGroup">
+        <form action="/createGroup" method="POST">
+            <h1>Create a New Group</h1>
+            <p>Group name:</p>
+            <input type="text" name="group_name" minlength="1" maxlength="50" required><br>
+            <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
+            <input type="submit" value="Create Group">
+        </form>
+    </div>
+
+    <div class="addMembers">
+        <form action="/addMembers" method="POST">
+            <h1>Add members to group</h1>
+            <p>Select Group:</p>
+            <select name="group_id">
+                {% for group in leader_groups %}
+                <option value="{{ group.id }}">{{ group.name }}</option>
+                {% endfor %}
+            </select>
+            <p>Select Group Members:</p>
+            <select name="members" multiple size="5">
+                {% for user in all_users %}
+                <option value="{{ user.id }}">{{ user.username }}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+            <input type="submit" value="Add members">
+        </form>
+    </div>
+
+{% elif session.username %}
+    <p>You do not have permission to create groups or add members as you are not a leader.</p>
+{% else %}
+    <p>You are not logged in.</p>
+    <a href="/login">Log in</a>
+{% endif %}
+
+{% endblock %}
+

@@ -2,9 +2,7 @@
 from datetime import datetime
 import secrets
 from flask import render_template, request, redirect, session, abort
-import users
-import tasks
-import groups
+import users , tasks, groups
 from app import app
 
 @app.route("/")
@@ -21,7 +19,6 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
         if users.login(username, password):
-            # Generate a new CSRF token for the session
             session["csrf_token"] = secrets.token_urlsafe()
             return redirect("/")
         else:
@@ -102,16 +99,13 @@ def create_task():
             return redirect("/")
     return render_template("error.html", message="Unknown error")
 
-#project_page()
 @app.route("/allTasks")
 def all_tasks():
     """List all tasks for the user logged in
     Here the user should see all tasks that are assigned to them in all groups
     or the tasks that they has created"""
-    task_list = tasks.get_tasks_by_user()
-    #projects.refresh_projects(user_projects)
+    task_list = list(tasks.get_tasks_by_user())
     return render_template('./allTasks.html', tasks=task_list)
-
 
 #one task page view
 @app.route("/task/<int:task_id>")
@@ -124,6 +118,22 @@ def task(task_id):
                  'role' : users.isleader()}
     print(user_info)
     return render_template('./task.html', task=task_info, date=datetime.now().date(), user=user_info)
+
+
+@app.route("/createGroup", methods=["GET", "POST"])
+def create_group():
+    """Group creation handler"""
+    if request.method == "GET":
+        return render_template("createGroup.html")
+    if request.method == "POST":
+        group_name = request.form["group_name"]
+        leader_id = users.user_id()
+        session["csrf_token"] = secrets.token_urlsafe()
+        if groups.create_group(group_name, leader_id):
+            return render_template("/")
+        else:
+            return render_template("error.html", message="Group creation failed")
+
 
 
 @app.route("/error")

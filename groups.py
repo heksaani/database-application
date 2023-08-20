@@ -1,14 +1,14 @@
 """Functions to handle groups."""
-from db import db
-from flask import session
 from sqlalchemy import text
-import users
+#from flask import session
+from db import db
+#import users
 
 
-def get_groups(user_id):
-    """Function to get ALL groups by user_id"""
-    sql = text("SELECT G.id, G.name FROM Groups G " \
-           "WHERE G.leader_id = :user_id " \
-           "ORDER BY G.id")
-    result = db.session.execute(sql, {"user_id": user_id})
-    return result
+def create_group(group_name, leader_id):
+    """Group creation handler"""
+    sql = text("INSERT INTO groups (name, leader_id) "\
+        "VALUES (:name, :leader_id)")
+    db.session.execute(sql, {"name":group_name,"leader_id":leader_id})
+    db.session.commit()
+    return True
