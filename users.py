@@ -6,10 +6,10 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from db import db
 
 
-def login(username, password):
+def login(user_name, password):
     """Login handler"""
     sql = text("SELECT id, username, password, role FROM users WHERE username=:username")
-    result = db.session.execute(sql, {"username":username})
+    result = db.session.execute(sql, {"username":user_name})
     user = result.fetchone()
     if user is None:
         return False
@@ -23,20 +23,19 @@ def login(username, password):
 
     return False
 
-
-def register(username, password, role):
+def register(user_name, password, role):
     """Registration handler"""
     sql = text("SELECT 1 FROM users WHERE username=:username")
-    result = db.session.execute(sql, {"username":username})
+    result = db.session.execute(sql, {"username":user_name})
     if result.fetchone():
         return False
 
     hash_value = generate_password_hash(password)
     sql = text("INSERT INTO users (username, password,role) "\
         "VALUES (:username, :password, :role)")
-    db.session.execute(sql, {"username":username,"password":hash_value,"role":role})
+    db.session.execute(sql, {"username":user_name,"password":hash_value,"role":role})
     db.session.commit()
-    return True
+    return login(user_name, password)
 
 
 def logout():
