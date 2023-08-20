@@ -64,7 +64,19 @@ def get_task(task_id):
     except Exception as sql_exception:
         return sql_exception
 
+def edit_task_name(task_id, name):
+    """Function to edit task name"""
+    sql = text("UPDATE Tasks SET name=:name WHERE id=:task_id")
+    db.session.execute(sql, {"task_id": task_id, "name": name})
+    db.session.commit()
+    return True
 
+def edit_task_description(task_id, description):
+    """Function to edit task description"""
+    sql = text("UPDATE Tasks SET description=:description WHERE id=:task_id")
+    db.session.execute(sql, {"task_id": task_id, "description": description})
+    db.session.commit()
+    return True
 
 def task_name(task_id):
     '''Get task name by id'''
