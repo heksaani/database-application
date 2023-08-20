@@ -153,7 +153,12 @@ def create_group():
         else:
             return render_template("error.html", message="Group creation failed")
 
-
+@app.route("/allGroups")
+def all_groups():
+    """List all groups for the user logged in"""
+    id = users.user_id()
+    group_list = list(groups.get_groups(id))
+    return render_template('./allGroups.html', groups=group_list)
 
 @app.route("/error")
 def error():
