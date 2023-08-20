@@ -2,7 +2,9 @@
 from datetime import datetime
 import secrets
 from flask import render_template, request, redirect, session, abort
-import users , tasks, groups
+import users
+import tasks
+import groups
 from app import app
 
 @app.route("/")
@@ -137,7 +139,6 @@ def edit_task(task_id):
     return redirect(('allTasks'))
 
 
-
 @app.route("/createGroup", methods=["GET", "POST"])
 def create_group():
     """Group creation handler"""
@@ -148,7 +149,7 @@ def create_group():
         leader_id = users.user_id()
         session["csrf_token"] = secrets.token_urlsafe()
         if groups.create_group(group_name, leader_id):
-            return render_template("/")
+            return render_template("index.html")
         else:
             return render_template("error.html", message="Group creation failed")
 

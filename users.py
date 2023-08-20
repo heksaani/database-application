@@ -5,7 +5,6 @@ from flask import session
 from werkzeug.security import check_password_hash, generate_password_hash
 from db import db
 
-
 def login(user_name, password):
     """Login handler"""
     sql = text("SELECT id, username, password, role FROM users WHERE username=:username")
