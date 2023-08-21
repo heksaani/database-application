@@ -17,6 +17,13 @@ Features of the application include:
 Currently working features:
 1. Registration, login
 2. Task creation
+3. Can view tasks in a list
+4. Can view individual tasks
+5. Leader can create a group
+6. Leader can view a list of roups (this need the links to pages still)
+7. Add member to group (this does not work, need debugging)
+8. Leader can select group to which assign the task 
+9. Edit task somehow does not work
 
 How to use (local):
 Clone the repository to your machine and move to its root folder.
