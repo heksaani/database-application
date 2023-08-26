@@ -2,20 +2,40 @@
 {% block content %}
 
 {% if not session.username %} 
-    <form action="/register" method="POST">
+    <form action="/register" method="POST" id="registerForm">
         Username:<br>
-        <input type="text" name="username" minlength="3" maxlength="20" required><br>
+        <input type="text" name="username" id="username" minlength="3" maxlength="20" required><br>
         Password:<br>
-        <input type="password" name="password1" minlength="8" maxlength="20" required><br>
+        <input type="password" name="password1" id="password1" minlength="8" maxlength="20" required><br>
         Rewrite password:<br>
-        <input type="password" name="password2" minlength="8" maxlength="20" required><br>
+        <input type="password" name="password2" id="password2" minlength="8" maxlength="20" required><br>
         <p>
-            <input type="radio" name="type" value=0> User
-            <input type="radio" name="type" value=1> Leader
+            <input type="radio" name="type" value=0 id="user"> User
+            <input type="radio" name="type" value=1 id="leader"> Leader
         </p>
         <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
-        <input type="submit" value="Create account">
+        <input type="submit" value="Create account" id="submitBtn" disabled>
     </form>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("registerForm");
+            const username = document.getElementById("username");
+            const password1 = document.getElementById("password1");
+            const password2 = document.getElementById("password2");
+            const user = document.getElementById("user");
+            const leader = document.getElementById("leader");
+            const submitBtn = document.getElementById("submitBtn");
+
+            form.addEventListener("input", function() {
+                if (username.value && password1.value && password2.value && (user.checked || leader.checked)) {
+                    submitBtn.disabled = false;
+                } else {
+                    submitBtn.disabled = true;
+                }
+            });
+        });
+    </script>
 
 {% else %}
     <p>You are already logged in!</p>
