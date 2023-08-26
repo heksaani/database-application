@@ -1,23 +1,39 @@
 {% extends "layout.html" %}
+{% block title %}Front page{% endblock %}
 {% block content %}
-<title>Frontpage</title><br>
+    <h1>Welcome to the Task Manager</h1>
+    <p class="lead">This is a simple To-Do app designed to help you manage your tasks and projects.</p>
 
-{% if session.username %}
-    <p>You have logged in as {{ session.username }}</p><br><br>
-    {% if session.role %}
-        <a href="/createGroup"> Create a new group</a>  <br><br>
-        <a href="/allGroups">All groups</a><br><br>
-        <a href="/addNewUser">Add new user to group</a><br><br>
-        <a href="/addTaskToGroup">Add task to group</a><br><br>
+    {% if session.username %}
+        <p>You are logged in as {{ session.username }}</p>
+        {% if session.role %}
+            <ul class="list-group">
+                <li class="list-group-item"><a href="/createGroup">Create a new group</a></li>
+                <li class="list-group-item"><a href="/allGroups">All groups</a></li>
+                <li class="list-group-item"><a href="/addNewUser">Add new user to group</a></li>
+                <li class="list-group-item"><a href="/addTaskToGroup">Add task to group</a></li>
+            </ul>
+        {% endif %}
+        <ul class="list-group mt-3">
+            <li class="list-group-item"><a href="/createTask">Create a new task</a></li>
+            <li class="list-group-item"><a href="/allTasks">All tasks</a></li>
+            <li class="list-group-item"><a href="/usersTasks">Your tasks</a></li>
+            <li class="list-group-item"><a href="/logout">Log out</a></li>
+        </ul>
+    {% else %}
+        <h2>Login</h2>
+        <form action="/login" method="post">
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+                <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+        <p class="mt-3">Don't have an account? <a href="/register">Register</a></p>
     {% endif %}
-    <a href="/createTask">Create a new task</a><br><br>
-    <a href="/allTasks">All tasks</a><br><br>
-    <a href="/userTasks">Your tasks</a><br><br>
-    <a href="/logout">Log out</a>
-{% else %}
-<div class="loginForm">
-    <a href="/login">Log in</a><br><br>
-    <a href="/register">Register</a>
-</div>
-{% endif %}
 {% endblock %}
