@@ -1,11 +1,18 @@
 """This module contains the routes for the application."""
 from datetime import datetime
 import secrets
-from flask import render_template, request, redirect, session
+from flask import render_template, request, redirect, session, abort
 import users
 import tasks
 import groups
 from app import app
+
+@app.before_request
+def make_csrf_token():
+    """Create CSRF token"""
+    if 'csrf_token' not in session:
+        session['csrf_token'] = secrets.token_hex(16)
+
 
 @app.route("/")
 def index():
@@ -18,10 +25,14 @@ def login():
     if request.method == "GET":
         return render_template("login.html")
     if request.method == "POST":
+
         username = request.form["username"]
         password = request.form["password"]
+        user_token = request.form["csrf_token"]
+        server_token = session.get('csrf_token')
+        if not user_token or user_token != server_token:
+            abort(403)
         if users.login(username, password):
-            session["csrf_token"] = secrets.token_urlsafe()
             return redirect("/")
         else:
             return render_template("error.html", message="Invalid username or password")
@@ -32,10 +43,14 @@ def register():
     if request.method == "GET":
         return render_template("register.html")
     if request.method == "POST":
+
+        user_token = request.form["csrf_token"]
+        server_token = session.get('csrf_token')
+        if not user_token or user_token != server_token:
+            abort(403)
         username = request.form["username"]
         password1 = request.form["password1"]
         password2 = request.form["password2"]
-        session["csrf_token"] = secrets.token_urlsafe()
 
         if password1 != password2:
             return render_template("error.html", message="Passwords do not match")
@@ -67,7 +82,6 @@ def logout():
     users.logout()
     return redirect("/")
 
-#in progress
 @app.route("/createTask", methods=["GET", "POST"])
 def create_task():
     """Task creation handler"""
@@ -77,9 +91,14 @@ def create_task():
         users_in_groups = {}
         for group in group_list:
             users_in_groups[group.id] = groups.get_users(group.id)
-        return render_template("createTask.html", groups=group_list, users=users_in_groups)    
+        return render_template("createTask.html", groups=group_list, users=users_in_groups)
     
     if request.method == "POST":
+        user_token = request.form.get('csrf_token')
+        server_token = session.get('csrf_token')
+
+        if not user_token or user_token != server_token:
+            abort(403)
         name = request.form["name"]
         desc = request.form["description"]
         status = "Not started"
@@ -95,11 +114,16 @@ def create_task():
 
 @app.route("/assignTask/<int:group_id>", methods=["GET", "POST"])
 def assign_task(group_id):
-    """Assign task handler"""
+    """Assign task to user in group
+    this can be only done by the leader of the group"""
     if request.method == "GET":
         users_in_group = groups.get_users(group_id)
         render_template("assignTask.html", users=users_in_group)
     elif request.method == "POST":
+        user_token = request.form.get('csrf_token')
+        server_token = session.get('csrf_token')
+        if not user_token or user_token != server_token:
+            abort(403)
         return
 
 @app.route("/allTasks")
@@ -119,7 +143,6 @@ def task(task_id):
     user_info = {'id' : users.user_id(),
                  'name' : users.username(),
                  'role' : users.isleader()}
-    print(user_info)
     return render_template('./task.html',task=task_info, date=datetime.now().date(), user=user_info)
 
 #edit task page view
@@ -143,9 +166,12 @@ def create_group():
     if request.method == "GET":
         return render_template("createGroup.html")
     if request.method == "POST":
+        user_token = request.form.get('csrf_token')
+        server_token = session.get('csrf_token')
+        if not user_token or user_token != server_token:
+            abort(403)
         group_name = request.form["group_name"]
         leader_id = users.user_id()
-        session["csrf_token"] = secrets.token_urlsafe()
         if groups.create_group(group_name, leader_id):
             return render_template("index.html")
         else:
