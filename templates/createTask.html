@@ -4,30 +4,47 @@
 
 {% if session.username %}
 <div class="createTask">
-    <form action="/createTask" method="POST">
+    <form action="/createTask" method="POST" id="createTaskForm">
         <h1>Create a task</h1>
         <p>Task name:</p>
-        <input type="text" name="name" minlength="1" maxlength="50" required><br>
+        <input type="text" name="name" id="taskName" minlength="1" maxlength="50" required><br>
         <p>Task description:</p>
-        <input type="text" name="description" maxlength="300"><br>
+        <input type="text" name="description" id="taskDescription" maxlength="300"><br>
         <p>Task deadline:</p>
-        <input type="date" name="deadline" required><br>
+        <input type="date" name="deadline" id="taskDeadline" required><br>
         <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
         {% if session.role %}
             <p>Select group</p>
-            <select name="group_id" id="group_select">
+            <select name="group_id" id="groupSelect">
                 {% for group in groups %}
                     <option value="{{ group.id }}">{{ group.name }}</option>
                 {% endfor %}
             </select>
         {% endif %}
         <br>
-        <input type="submit" value="Create task">
+        <input type="submit" value="Create task" id="submitBtn" disabled>
     </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById("createTaskForm");
+        const taskName = document.getElementById("taskName");
+        const taskDeadline = document.getElementById("taskDeadline");
+        const submitBtn = document.getElementById("submitBtn");
+
+        form.addEventListener("input", function() {
+            if (taskName.value && taskDeadline.value) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        });
+    });
+</script>
+
 {% else %}
     <p>You are not logged in</p>
     <a href="/login">Log in</a>
 {% endif %}
-</div>
 {% endblock %}
-```
