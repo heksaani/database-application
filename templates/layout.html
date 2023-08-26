@@ -1,9 +1,11 @@
 <!doctype html>
 <title>Task manager - {% block title %}{% endblock %}</title>
 <a href="/">Front page</a>
-<a href="/login">Log in</a>
-<a href="/register">Register</a>
-<hr>
+{% if session.username %}
+    <a href="/logout">Log out</a>
+{% else %}
+    <a href="/login">Log in</a> or <a href="/register">Register</a>
+{% endif %}
 {% block content %}{% endblock %}
 <hr>
 
