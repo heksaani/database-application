@@ -6,12 +6,6 @@ import users
 from db import db
 #import users
 
-def task(task_id):
-    "Get task by id"
-    sql = "SELECT name, description FROM Tasks WHERE id=:id"
-    result = db.session.execute(sql, {"id":task_id})
-    return result.fetchone()
-
 def create_task(name, description, status, creator_id, assignee_id, group_id, deadline):
     """Function to create a new task"""
     sql = text("INSERT INTO tasks (name, description, status, creator_id, assignee_id, "
@@ -46,23 +40,20 @@ def get_tasks_by_user():
 
 def get_task(task_id):
     """Getting one task by id"""
-    try:
-        sql = text("SELECT * FROM Tasks WHERE id=:task_id")
-        result = db.session.execute(sql, {"task_id": task_id})
-        task_result = result.fetchone()
-        #task results as dictionary:
-        task_dict = {'id': task_result[0],
-                        'name': task_result[1],
-                        'description': task_result[2],
-                        'status': task_result[3],
-                        'creator_id': task_result[4],
-                        'assignee_id': task_result[5],
-                        'group_id': task_result[6],
-                        'deadline': task_result[7]
-                        }       
-        return task_dict
-    except Exception as sql_exception:
-        return sql_exception
+    sql = text("SELECT * FROM Tasks WHERE id=:task_id")
+    result = db.session.execute(sql, {"task_id": task_id})
+    task_result = result.fetchone()
+    #task results as dictionary:
+    task_dict = {'id': task_result[0],
+                    'name': task_result[1],
+                    'description': task_result[2],
+                    'status': task_result[3],
+                    'creator_id': task_result[4],
+                    'assignee_id': task_result[5],
+                    'group_id': task_result[6],
+                    'deadline': task_result[7]
+                    }       
+    return task_dict
 
 def edit_task_name(task_id, name):
     """Function to edit task name"""
