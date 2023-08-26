@@ -13,7 +13,6 @@ def make_csrf_token():
     if 'csrf_token' not in session:
         session['csrf_token'] = secrets.token_hex(16)
 
-
 @app.route("/")
 def index():
     """Index handler"""
@@ -92,7 +91,6 @@ def create_task():
         for group in group_list:
             users_in_groups[group.id] = groups.get_users(group.id)
         return render_template("createTask.html", groups=group_list, users=users_in_groups)
-    
     if request.method == "POST":
         user_token = request.form.get('csrf_token')
         server_token = session.get('csrf_token')
@@ -146,19 +144,38 @@ def task(task_id):
     return render_template('./task.html',task=task_info, date=datetime.now().date(), user=user_info)
 
 #edit task page view
-@app.route("/editTask/<int:task_id>", methods=["GET"])
+@app.route("/editTask/<int:task_id>", methods=["GET","POST"])
 def edit_task(task_id):
-    """Edit task page"""
-    task_to_edit = tasks.get_task(task_id)
-    if not task:
-        return "Task not found", 404
-    task_to_edit.name = request.form['task_name']
-    task_to_edit.description = request.form['task_description']
+    """Edit task page where user can edit task name
+    and description
+    If user is leader of the group, they can also assign task to other users
+    and change the status of the task
+    Also if user has created the task, they can delete it or change the deadline
+    So always the creator of the task can edit it"""
 
-    # Check if current user is the creator before updating the deadline
-    if task.creator_id == session['user_id']:
-        task.deadline = request.form['deadline']
-    return redirect(('allTasks'))
+    task_to_edit = tasks.get_task(task_id)
+    if not task_to_edit:
+        return "Task not found", 404
+    if request.method == "GET":
+        return render_template('./editTask.html', task=task_to_edit)
+
+    if request.method == "POST":
+        user_token = request.form.get('csrf_token')
+        server_token = session.get('csrf_token')
+        if not user_token or user_token != server_token:
+            abort(403)
+
+        new_name = request.form["task_name"]
+        new_description = request.form["task_description"]
+        new_deadline = request.form["task_deadline"]
+        tasks.edit_task_name(task_id, new_name)
+        tasks.edit_description(task_id, new_description)
+        tasks.edit_deadline(task_id, new_deadline)
+
+        return redirect("/task/"+str(task_id))
+
+
+
 
 @app.route("/createGroup", methods=["GET", "POST"])
 def create_group():
