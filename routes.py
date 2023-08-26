@@ -1,7 +1,7 @@
 """This module contains the routes for the application."""
 from datetime import datetime
 import secrets
-from flask import render_template, request, redirect, session, abort
+from flask import render_template, request, redirect, session
 import users
 import tasks
 import groups
@@ -36,13 +36,19 @@ def register():
         password1 = request.form["password1"]
         password2 = request.form["password2"]
         session["csrf_token"] = secrets.token_urlsafe()
+
         if password1 != password2:
             return render_template("error.html", message="Passwords do not match")
-
+        if password1 == "" or username == "":
+            return render_template("error.html", message="Password cannot be empty")
+        if len(password1) < 8 or len(password1) > 20:
+            return render_template("error.html", message="Password must be between 8 and 20 characters")
+        if len(username) < 3 or len(username) > 20:
+            return render_template("error.html", message="Username must be between 3 and 20 characters")
+        
         role = int(request.form["type"])
         status = "user"
         leader = False
-
         if role == 1:
             status = "leader"
             leader = True
@@ -71,10 +77,9 @@ def create_task():
         users_in_groups = {}
         for group in group_list:
             users_in_groups[group.id] = groups.get_users(group.id)
-        return render_template("createTask.html", groups=group_list, users=users_in_groups)
+        return render_template("createTask.html", groups=group_list, users=users_in_groups)    
     
     if request.method == "POST":
-
         name = request.form["name"]
         desc = request.form["description"]
         status = "Not started"
@@ -90,6 +95,7 @@ def create_task():
 
 @app.route("/assignTask/<int:group_id>", methods=["GET", "POST"])
 def assign_task(group_id):
+    """Assign task handler"""
     if request.method == "GET":
         users_in_group = groups.get_users(group_id)
         render_template("assignTask.html", users=users_in_group)
@@ -114,8 +120,7 @@ def task(task_id):
                  'name' : users.username(),
                  'role' : users.isleader()}
     print(user_info)
-    return render_template('./task.html', task=task_info, date=datetime.now().date(), user=user_info)
-
+    return render_template('./task.html',task=task_info, date=datetime.now().date(), user=user_info)
 
 #edit task page view
 @app.route("/editTask/<int:task_id>", methods=["GET"])
@@ -129,10 +134,8 @@ def edit_task(task_id):
 
     # Check if current user is the creator before updating the deadline
     if task.creator_id == session['user_id']:
-        task.deadline = request.form['deadline']  # Adjust based on how you handle date parsing
-
+        task.deadline = request.form['deadline']
     return redirect(('allTasks'))
-
 
 @app.route("/createGroup", methods=["GET", "POST"])
 def create_group():
@@ -151,8 +154,8 @@ def create_group():
 @app.route("/allGroups")
 def all_groups():
     """List all groups for the user logged in"""
-    id = users.user_id()
-    group_list = list(groups.get_groups(id))
+    user_id = users.user_id()
+    group_list = list(groups.get_groups(user_id))
     return render_template('./allGroups.html', groups=group_list)
 
 @app.route("/error")
