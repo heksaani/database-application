@@ -4,11 +4,11 @@
 {% if not session.username %} 
     <form action="/register" method="POST">
         Username:<br>
-        <input type="text" name="username" minlength="1" maxlength="20" required><br>
+        <input type="text" name="username" minlength="3" maxlength="20" required><br>
         Password:<br>
-        <input type="password" name="password1" minlength="5" maxlength="50" required><br>
+        <input type="password" name="password1" minlength="8" maxlength="20" required><br>
         Rewrite password:<br>
-        <input type="password" name="password2" minlength="5" maxlength="50" required><br>
+        <input type="password" name="password2" minlength="8" maxlength="20" required><br>
         <p>
             <input type="radio" name="type" value=0> User
             <input type="radio" name="type" value=1> Leader
@@ -16,6 +16,7 @@
         <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
         <input type="submit" value="Create account">
     </form>
+
 {% else %}
     <p>You are already logged in!</p>
     <a href="/">Front page</a>

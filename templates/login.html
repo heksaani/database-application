@@ -13,6 +13,7 @@ Already logged in<br>
         <p>Password:<br>
             <input type="password" name="password">
         </p>
+        <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
         <input type="submit" value="Log in">
     </form>
 </div>
