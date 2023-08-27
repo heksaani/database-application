@@ -1,5 +1,5 @@
 """Functions to handle tasks."""
-#import datetime
+import datetime
 from sqlalchemy import text
 #from flask import session
 import users
@@ -11,22 +11,19 @@ def create_task(name, description, status, creator_id, assignee_id, group_id, de
     sql = text("INSERT INTO tasks (name, description, status, creator_id, assignee_id, "
                "group_id, deadline) VALUES (:name, :description, :status, :creator_id, "
                ":assignee_id, :group_id, :deadline)")
-    try:
-        db.session.execute(
-            sql,{
-                "name": name,
-                "description": description,
-                "status": status,
-                "creator_id": creator_id,
-                "assignee_id": assignee_id,
-                "group_id": group_id,
-                "deadline": deadline
-            })
-        db.session.commit()
-        return True
-    except Exception as error:
-        print(f"Error creating task: {error}")
-        return False
+
+    db.session.execute(
+        sql,{
+            "name": name,
+            "description": description,
+            "status": status,
+            "creator_id": creator_id,
+            "assignee_id": assignee_id,
+            "group_id": group_id,
+            "deadline": deadline
+        })
+    db.session.commit()
+    return True
 
 def get_tasks_by_user():
     """Function to get ALL tasks by user"""
@@ -39,7 +36,7 @@ def get_tasks_by_user():
 
 
 def get_task(task_id):
-    """Getting one task by id"""
+    """Getting one task by task id"""
     sql = text("SELECT * FROM Tasks WHERE id=:task_id")
     result = db.session.execute(sql, {"task_id": task_id})
     task_result = result.fetchone()
@@ -52,7 +49,7 @@ def get_task(task_id):
                     'assignee_id': task_result[5],
                     'group_id': task_result[6],
                     'deadline': task_result[7]
-                    }       
+                    }
     return task_dict
 
 def edit_task_name(task_id, name):
@@ -62,7 +59,7 @@ def edit_task_name(task_id, name):
     db.session.commit()
     return True
 
-def edit_task_description(task_id, description):
+def edit_description(task_id, description):
     """Function to edit task description"""
     sql = text("UPDATE Tasks SET description=:description WHERE id=:task_id")
     db.session.execute(sql, {"task_id": task_id, "description": description})
@@ -74,6 +71,15 @@ def task_name(task_id):
     sql = text("SELECT name FROM Tasks WHERE id=:task_id")
     result = db.session.execute(sql, {"task_id":task_id})
     return result.fetchone()[0]
+
+def update_status():
+    """Function to update tasks status badsed on their deadline"""
+    current_time = datetime.datetime.now()
+    sql = text("UPDATE Tasks SET status='Late' WHERE deadline < :current_time")
+    db.session.execute(sql, {"current_time": current_time})
+    db.session.commit()
+
+
 
 
 #leader functions
