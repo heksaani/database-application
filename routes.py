@@ -34,6 +34,8 @@ def login():
             return redirect("/")
         else:
             return render_template("error.html", message="Invalid username or password")
+    else:
+        return render_template("error.html", message="Unknown error")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -145,8 +147,8 @@ def all_tasks():
 
     return render_template('./allTasks.html', tasks=paginated_tasks, total_tasks=total_tasks, per_page=per_page)
 
-
-@app.route("/usersTasks/<int:user_id>")
+#this does not work yet
+@app.route("/usersTasks/<int:user_id>", )
 def users_tasks(user_id):
     """List all tasks for the user logged in
     Here the user should see all tasks that are assigned to them in all groups
@@ -155,11 +157,25 @@ def users_tasks(user_id):
     return render_template('./usersTasks.html', tasks=task_list)
 
 #one task page view
-@app.route("/task/<int:task_id>")
+@app.route("/task/<int:task_id>", methods=["GET","POST"])
 def task(task_id):
     """Main page for task"""
+    if request.method == "POST":
+        user_token = request.form.get('csrf_token')
+        server_token = session.get('csrf_token')
+        if not user_token or user_token != server_token:
+            abort(403)
+        new_status = request.form.get("new_status")
+        if new_status:
+            tasks.change_task_status(task_id, new_status)
+            return redirect("/task/"+str(task_id))
+        
+        action = request.form.get('action')
+        if action   == "delete_task":
+            tasks.delete_task(task_id)
+            return redirect("/allTasks")
+        
     task_info = tasks.get_task(task_id)
-    tasks.update_status()
     user_info = {'id' : users.user_id(),
                  'name' : users.username(),
                  'role' : users.isleader()}
@@ -186,43 +202,69 @@ def edit_task(task_id):
         server_token = session.get('csrf_token')
         if not user_token or user_token != server_token:
             abort(403)
-
         new_name = request.form["task_name"]
         new_description = request.form["task_description"]
         new_deadline = request.form["task_deadline"]
         tasks.edit_task_name(task_id, new_name)
         tasks.edit_description(task_id, new_description)
         tasks.edit_deadline(task_id, new_deadline)
-
-        return redirect("/task/"+str(task_id))  
+        return redirect("/task/"+str(task_id))
     return render_template("error.html", message="Unknown error")
 
-
-
-
+############gourps#############
 @app.route("/createGroup", methods=["GET", "POST"])
 def create_group():
-    """Group creation handler"""
+    """Group creation handler
+    where leader can create a group and add members to it"""
+
     if request.method == "GET":
-        return render_template("createGroup.html")
+        leader_groups = list(groups.get_groups(users.user_id()))
+        all_users = list(users.get_all_users())
+        return render_template("createGroup.html", leader_groups=leader_groups, all_users=all_users)
+
     if request.method == "POST":
         user_token = request.form.get('csrf_token')
         server_token = session.get('csrf_token')
         if not user_token or user_token != server_token:
             abort(403)
-        group_name = request.form["group_name"]
-        leader_id = users.user_id()
-        if groups.create_group(group_name, leader_id):
-            return render_template("index.html")
-        else:
-            return render_template("error.html", message="Group creation failed")
+
+        # First we create the group
+        if 'group_name' in request.form:
+            group_name = request.form["group_name"]
+            leader_id = users.user_id()
+            if groups.create_group(group_name, leader_id):
+                flash("Group created successfully", 'success')
+            else:
+                flash("Group creation failed", 'error')
+
+        # Add members to the group
+        elif 'group_id' in request.form and 'members' in request.form:
+            group_id = request.form["group_id"]
+            members = request.form.getlist("members")
+
+            for user_id in members:
+                groups.add_user_to_group(user_id, group_id)
+
+        # Refresh the list of groups and users
+        leader_groups = list(groups.get_groups(users.user_id()))
+        all_users = list(users.get_all_users())
+
+        return render_template("createGroup.html", leader_groups=leader_groups, all_users=all_users)
+
 
 @app.route("/allGroups")
 def all_groups():
     """List all groups for the user logged in"""
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
     user_id = users.user_id()
-    group_list = list(groups.get_groups(user_id))
-    return render_template('./allGroups.html', groups=group_list)
+    users_all_groups = list(groups.get_groups(user_id))
+    total_groups= len(users_all_groups)
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_groups= users_all_groups[start:end]
+
+    return render_template('./allTasks.html', tasks=paginated_groups, total_groups=total_groups, per_page=per_page)
 
 @app.route("/error")
 def error():

@@ -17,6 +17,13 @@ def create_group(group_name, leader_id):
     db.session.commit()
     return True
 
+def add_user_to_group(user_id, group_id):
+    """Function to add user to group"""
+    sql = text("INSERT INTO usergroups (user_id, group_id) "\
+               "VALUES (:user_id, :group_id)")
+    db.session.execute(sql, {"user_id": user_id, "group_id": group_id})
+    db.session.commit()
+    return True
 
 
 def get_groups(user_id):

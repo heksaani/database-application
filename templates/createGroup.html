@@ -1,44 +1,65 @@
 {% extends "layout.html" %}
 {% block content %}
 
-{% if session.username and session.role %} 
+<div class="container">
+    {% if session.username and session.role %} 
+    <div class="row">
+        <!-- Create Group Section -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Create a New Group</h5>
+                    <form action="/createGroup" method="POST">
+                        <div class="mb-3">
+                            <label for="group_name" class="form-label">Group Name:</label>
+                            <input type="text" class="form-control" id="group_name" name="group_name" minlength="1" maxlength="50" required>
+                        </div>
+                        <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
+                        <button type="submit" class="btn btn-primary">Create Group</button>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-    <div class="createGroup">
-        <form action="/createGroup" method="POST">
-            <h1>Create a New Group</h1>
-            <p>Group name:</p>
-            <input type="text" name="group_name" minlength="1" maxlength="50" required><br>
-            <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
-            <input type="submit" value="Create Group">
-        </form>
+        <!-- Add Members Section -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Add Members to Group</h5>
+                    <form action="/createGroup" method="POST">
+                        <div class="mb-3">
+                            <label for="group_id" class="form-label">Select Group:</label>
+                            <select class="form-select" id="group_id" name="group_id">
+                                {% for group in leader_groups %}
+                                <option value="{{ group.id }}">{{ group.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="members" class="form-label">Select Group Members:</label>
+                            <select class="form-select" id="members" name="members" multiple size="5">
+                                {% for user in all_users %}
+                                <option value="{{ user.id }}">{{ user.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
+                        <button type="submit" class="btn btn-primary">Add Members</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="addMembers">
-        <form action="/addMembers" method="POST">
-            <h1>Add members to group</h1>
-            <p>Select Group:</p>
-            <select name="group_id">
-                {% for group in leader_groups %}
-                <option value="{{ group.id }}">{{ group.name }}</option>
-                {% endfor %}
-            </select>
-            <p>Select Group Members:</p>
-            <select name="members" multiple size="5">
-                {% for user in all_users %}
-                <option value="{{ user.id }}">{{ user.username }}</option>
-                {% endfor %}
-            </select>
-            <br><br>
-            <input type="submit" value="Add members">
-        </form>
+    {% elif session.username %}
+    <div class="alert alert-warning" role="alert">
+        You do not have permission to create groups or add members as you are not a leader.
     </div>
-
-{% elif session.username %}
-    <p>You do not have permission to create groups or add members as you are not a leader.</p>
-{% else %}
-    <p>You are not logged in.</p>
-    <a href="/login">Log in</a>
-{% endif %}
+    {% else %}
+    <div class="alert alert-danger" role="alert">
+        You are not logged in. <a href="/login" class="alert-link">Log in</a>
+    </div>
+    {% endif %}
+</div>
 
 {% endblock %}
-

@@ -56,3 +56,10 @@ def username():
 def isleader():
     """returns role from session"""
     return session.get("role", 0)
+
+def get_all_users():
+    """Function to get ALL users"""
+    sql = text("SELECT U.id, U.username FROM Users U " \
+           "ORDER BY U.id")
+    result = db.session.execute(sql)
+    return result
