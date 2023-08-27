@@ -1,7 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
 
-{% if not session.username %} 
+{% if not session.username %}
+    <h1>Register</h1>
     <form action="/register" method="POST" id="registerForm">
         Username:<br>
         <input type="text" name="username" id="username" minlength="3" maxlength="20" required><br>

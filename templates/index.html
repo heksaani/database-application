@@ -1,10 +1,8 @@
 {% extends "layout.html" %}
-{% block title %}Front page{% endblock %}
 {% block content %}
-    <h1>Welcome to the Task Manager</h1>
-    <p class="lead">This is a simple To-Do app designed to help you manage your tasks and projects.</p>
-
+    
     {% if session.username %}
+        <h1>Welcome to the Task Manager</h1>
         <p>You are logged in as {{ session.username }}</p>
         {% if session.role %}
             <ul class="list-group">
@@ -21,6 +19,9 @@
             <li class="list-group-item"><a href="/logout">Log out</a></li>
         </ul>
     {% else %}
+    <h1>Welcome to the Task Manager</h1>
+    <p class="lead">This is a simple To-Do app designed to help you manage your tasks and projects.</p>
+    
         <h2>Login</h2>
         <form action="/login" method="post">
             <div class="mb-3">

@@ -1,0 +1,12 @@
+.task-list {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;  /* or whatever width you prefer */
+}
+.task-box {
+    border: 2px solid #ccc;
+    padding: 10px;
+    margin: 10px;
+    width: 200px;
+    text-align: center;
+}

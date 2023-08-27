@@ -1,18 +1,19 @@
 {% extends "layout.html" %}
 {% block content %}
-{% if session.user %}
-<h2>Edit Task</h2>
+{% if session.username %}
+<h2>Edit Task {{task["name"]}}</h2>
 
-<form action="/updateTask/{{ task.id }}" method="POST">
-    <label for="task_name">Task Name:</label><br>
+<form action="/editTask/{{ task.id }}" method="POST">
+    <label for="task_name">New task Name:</label><br>
     <input type="text" id="task_name" name="task_name" value="{{ task.name }}" required><br><br>
 
     <label for="task_description">Description:</label><br>
     <textarea id="task_description" name="task_description" rows="4" cols="50" required>{{ task.description }}</textarea><br><br>
 
-    {% if task.creator_id == session.user_id %} {# Only display if current user is the creator of the task #}
+  
+    {% if task.creator_id == session.user_id %} 
         <label for="deadline">Deadline:</label><br>
-        <input type="date" id="deadline" name="deadline" value="{{ task.deadline|date('Y-m-d') }}" required><br><br>
+        <input type="date" id="deadline" name="deadline" value="{{ task.deadline.strftime('%Y-%m-%d') }}" required><br><br>
     {% endif %}
 
     <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">

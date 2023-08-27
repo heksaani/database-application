@@ -7,20 +7,30 @@
     <p><strong>{{ task['name'] }}</strong></p>
     <p>{{ task['description'] }}</p>
     <p>
-        Status: {{ task['status'] }}
+        Status: {{ task['status'] }}<br>
         Deadline: {{ task['deadline'].day }} {{ task['deadline'].strftime("%B") }} 
         {{ task['deadline'].year }} (in {{ (task['deadline']-date).days }} days)
     </p>
+    <br>
     <div class="edit_task">
-        <a href='/editTask/{{ task["id"] }}' class="task-edit-button">
+        <a href='/editTask/{{ task.id }}' class="task-edit-button">
           <button>Edit task</button>
         </a>
-    </div>
+        </div>
+    <br>
+    {% if task["assignee_id"] == session["user_id"] %}
+        <div class="mark_task_as_done">
+            <a href='/markTaskAsDone/{{ task.id }}' class="task-done-button">
+              <button>Mark task as done</button>
+            </a>
+        </div>
+        <br>
     <div class="delete_task">
-        <a href='/deleteTask/{{ task["id"] }}' class="task-delete-button">
-          <button>Delete task</button>
+      <a href='/deleteTask/{{ task.id }}' class="task-delete-button"> <button>Delete task</button>
         </a>
     </div>
+    {% endif %}
+    <br>
     <div class="back_to_tasks">
         <a href='/allTasks' class="back-to-tasks-button">
           <button>Back to tasks</button>
