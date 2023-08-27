@@ -1,9 +1,12 @@
 {% extends "layout.html" %} 
 {% block content %}
-
+<!--back to all tasks -->
+<div class="back_to_tasks">
+  <a href="/allTasks">
+    <button>Back to Tasks</button>
+  </a>
 {% if session.username %}
     <div class="task_mainpage"></div>
-    <br>
     <p><strong>{{ task['name'] }}</strong></p>
     <p>{{ task['description'] }}</p>
     <p>
@@ -13,28 +16,53 @@
     </p>
     <br>
     <div class="edit_task">
+      <div class="edit_task_wrapper">
+        <p>Edit task</p>
         <a href='/editTask/{{ task.id }}' class="task-edit-button">
-          <button>Edit task</button>
+          <button class="custom-button">Edit</button>
         </a>
-        </div>
-    <br>
-    {% if task["assignee_id"] == session["user_id"] %}
-        <div class="mark_task_as_done">
-            <a href='/markTaskAsDone/{{ task.id }}' class="task-done-button">
-              <button>Mark task as done</button>
-            </a>
-        </div>
-        <br>
-    <div class="delete_task">
-      <a href='/deleteTask/{{ task.id }}' class="task-delete-button"> <button>Delete task</button>
-        </a>
-    </div>
+        {% if task["assignee_id"] == session["user_id"] %}
+        <form id="deleteForm" action="{{ url_for('task', task_id=task.id) }}" method="POST">
+          <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
+          <input type="hidden" name="action" value="delete_task">
+          <button type="button" class="custom-button" onclick="confirmDelete()">Delete Task</button>
+        </form>
     {% endif %}
-    <br>
-    <div class="back_to_tasks">
-        <a href='/allTasks' class="back-to-tasks-button">
-          <button>Back to tasks</button>
-        </a>
+  </div>
+</div>
+<script>
+function confirmDelete() {
+  if (confirm('Are you sure you want to delete this task?')) {
+    document.getElementById('deleteForm').submit();
+  }
+}
+</script>
+
+    {% if task["assignee_id"] == session["user_id"] %}
+    <div class="update_status">
+      <p>Change Status:</p>
+      <br>
+      <form action ="{{ url_for('task', task_id=task.id) }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
+        <input type="hidden" name="new_status" value="Not Started">
+        <input type="hidden" name="action" value="update_status">
+        <button type="submit" class="custom-button">Mark as Not Started</button>
+    </form>
+      <form action="{{ url_for('task', task_id=task.id) }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
+        <input type="hidden" name="new_status" value="In Progress">
+        <input type="hidden" name="action" value="update_status">
+        <button type="submit" class = "custom-button">Mark as In Progress</button>
+    </form>
+    <form action="{{ url_for('task', task_id=task.id) }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
+        <input type="hidden" name="new_status" value="Completed">
+        <input type="hidden" name="action" value="update_status">
+        <button type="submit" class="custom-button">Mark as Completed</button>
+    </form>
+    </div>
+  </div>
+  {% endif %}
 {% else %}
     <p>You are not logged in!</p>
 {% endif %}

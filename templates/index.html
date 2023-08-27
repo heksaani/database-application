@@ -2,7 +2,6 @@
 {% block content %}
     
     {% if session.username %}
-        <h1>Welcome to the Task Manager</h1>
         <p>You are logged in as {{ session.username }}</p>
         {% if session.role %}
             <ul class="list-group">

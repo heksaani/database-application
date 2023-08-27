@@ -12,7 +12,6 @@ def create_group(group_name, leader_id):
     result = db.session.execute(sql, {"name":group_name,"leader_id":leader_id})
     
     group_id = result.fetchone()[0]
-    #add the leader to the group
     sql_group  = text("INSERT INTO usergroups (user_id, group_id) "\
         "VALUES (:user_id, :group_id)")
     db.session.execute(sql_group, {"user_id":leader_id,"group_id":group_id})    
