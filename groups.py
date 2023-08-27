@@ -8,15 +8,15 @@ from db import db
 def create_group(group_name, leader_id):
     """Group creation handler"""
     sql = text("INSERT INTO groups (name, leader_id) "\
-        "VALUES (:name, :leader_id)")
-    result = db.session.execute(sql, {"name":group_name,"leader_id":leader_id})
-    
-    group_id = result.fetchone()[0]
-    sql_group  = text("INSERT INTO usergroups (user_id, group_id) "\
-        "VALUES (:user_id, :group_id)")
-    db.session.execute(sql_group, {"user_id":leader_id,"group_id":group_id})    
+               "VALUES (:name, :leader_id) RETURNING id")
+    result = db.session.execute(sql, {"name": group_name, "leader_id": leader_id})
+    group_id = result.fetchone()[0]  
+    sql_group = text("INSERT INTO usergroups (user_id, group_id) "\
+                     "VALUES (:user_id, :group_id)")
+    db.session.execute(sql_group, {"user_id": leader_id, "group_id": group_id})
     db.session.commit()
     return True
+
 
 
 def get_groups(user_id):
