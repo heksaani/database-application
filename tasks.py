@@ -72,14 +72,27 @@ def task_name(task_id):
     result = db.session.execute(sql, {"task_id":task_id})
     return result.fetchone()[0]
 
+
+def edit_status(task_id, status):
+    """Function to edit task status"""
+    sql = text("UPDATE Tasks SET status=:status WHERE id=:task_id")
+    db.session.execute(sql, {"task_id": task_id, "status": status})
+    db.session.commit()
+    return True
+
+def edit_deadline(task_id, deadline):
+    """Function to edit task deadline"""
+    sql = text("UPDATE Tasks SET deadline=:deadline WHERE id=:task_id")
+    db.session.execute(sql, {"task_id": task_id, "deadline": deadline})
+    db.session.commit()
+    return True
+
 def update_status():
     """Function to update tasks status badsed on their deadline"""
     current_time = datetime.datetime.now()
     sql = text("UPDATE Tasks SET status='Late' WHERE deadline < :current_time")
     db.session.execute(sql, {"current_time": current_time})
     db.session.commit()
-
-
 
 
 #leader functions
