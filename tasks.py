@@ -93,9 +93,11 @@ def update_status():
 
 def delete_task(task_id):
     """Function to delete a task"""
+    print(f"Deleting task with ID {task_id}")
     sql = text("DELETE FROM Tasks WHERE id=:task_id")
-    db.session.execute(sql, {"task_id":task_id})
+    db.session.execute(sql, {"task_id": task_id})
     db.session.commit()
+    return True
 
 def get_all_tasks(user_id):
     """Function to get ALL tasks by user_id"""
@@ -112,3 +114,32 @@ def get_tasks_by_group(group_id):
            "ORDER BY T.id")
     result = db.session.execute(sql, {"group_id": group_id})
     return result
+
+def get_time_for_task(group_id):
+    """Function to get time spent doing tasks by group_id"""
+    query = text("""SELECT task_id, SUM(time_spent) 
+                    FROM TaskTime 
+                    WHERE task_id IN (SELECT id FROM Tasks WHERE group_id = :group_id) 
+                    GROUP BY task_id""")
+
+    result = db.session.execute(query, {'group_id': group_id})  # Changed this line
+
+    result_dict = {}
+    for row in result:
+        result_dict[row[0]] = row[1]
+    return result_dict
+
+def update_time_spent(task_id, time_spent):
+    """Function to update time spent on a task"""
+    query = text("""UPDATE TaskTime SET time_spent = NOW() - assigned_at 
+                    WHERE task_id = :task_id AND user_id = :user_id""")
+    db.session.execute(query, {'task_id': task_id, 'user_id': user_id})
+    db.session.commit()
+
+def set_assigned_time(task_id, user_id):
+    """Function to set time spent on a task"""
+    query = text("""INSERT INTO TaskTime (task_id, user_id, assigned_at)
+                 VALUES (:task_id, :user_id, NOW())""")
+    db.session.execute(query, {'task_id': task_id, 'user_id': user_id})
+    db.session.commit()
+
