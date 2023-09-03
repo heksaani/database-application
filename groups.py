@@ -10,7 +10,7 @@ def create_group(group_name, leader_id):
     sql = text("INSERT INTO groups (name, leader_id) "\
                "VALUES (:name, :leader_id) RETURNING id")
     result = db.session.execute(sql, {"name": group_name, "leader_id": leader_id})
-    group_id = result.fetchone()[0]  
+    group_id = result.fetchone()[0]
     sql_group = text("INSERT INTO usergroups (user_id, group_id) "\
                      "VALUES (:user_id, :group_id)")
     db.session.execute(sql_group, {"user_id": leader_id, "group_id": group_id})
@@ -42,3 +42,25 @@ def get_users(group_id):
            "ORDER BY U.id")
     result = db.session.execute(sql, {"group_id": group_id})
     return result
+
+def get_group(group_id):
+    """Function to get group by group_id"""
+    sql = text("SELECT G.id, G.name FROM Groups G " \
+           "WHERE G.id = :group_id " \
+           "ORDER BY G.id")
+    result = db.session.execute(sql, {"group_id": group_id})
+    return result
+
+def edit_group_name(group_id, name):
+    """Function to edit group name"""
+    sql = text("UPDATE Groups SET name=:name WHERE id=:group_id")
+    db.session.execute(sql, {"group_id": group_id, "name": name})
+    db.session.commit()
+    return True
+
+def delete_group(group_id):
+    """Function to delete group"""
+    sql = text("DELETE FROM Groups WHERE id=:group_id")
+    db.session.execute(sql, {"group_id": group_id})
+    db.session.commit()
+    return True
