@@ -34,7 +34,6 @@ def get_tasks_by_user():
     result = db.session.execute(sql, {"user_id": user_id})
     return result
 
-
 def get_task(task_id):
     """Getting one task by task id"""
     sql = text("SELECT * FROM Tasks WHERE id=:task_id")
@@ -72,13 +71,11 @@ def task_name(task_id):
     result = db.session.execute(sql, {"task_id":task_id})
     return result.fetchone()[0]
 
-
 def change_task_status(task_id, new_status):
     """Update the status of a task by using a button and task id"""
     sql = text("UPDATE Tasks SET status=:new_status WHERE id=:task_id")
     db.session.execute(sql, {"new_status": new_status, "task_id": task_id})
     db.session.commit()
-
 
 def edit_deadline(task_id, deadline):
     """Function to edit task deadline"""
@@ -100,25 +97,18 @@ def delete_task(task_id):
     db.session.execute(sql, {"task_id":task_id})
     db.session.commit()
 
+def get_all_tasks(user_id):
+    """Function to get ALL tasks by user_id"""
+    sql = text("SELECT T.id, T.name FROM Tasks T " \
+           "WHERE T.creator_id = :user_id OR T.assignee_id = :user_id " \
+           "ORDER BY T.id")
+    result = db.session.execute(sql, {"user_id": user_id})
+    return result
 
-#leader functions
-#def add_user_to_group(user_id, group_id):
-#    """Function to add user to group"""
-#    sql = text("INSERT INTO group_users (group_id, user_id) VALUES (:group_id, :user_id)")
-#    db.session.execute(sql, {"group_id": group_id, "user_id": user_id})
-#    db.session.commit()
-#    return True
-
-#def add_task_to_group(task_id, group_id):
-#    """Function to add task to group"""
-#    sql = text("INSERT INTO group_tasks (group_id, task_id) VALUES (:group_id, :task_id)")
-#    db.session.execute(sql, {"group_id": group_id, "task_id": task_id})
-#    db.session.commit()
-#    return True
-
-#deleting task
-#def delete_task(task_id):
-#    """Function to delete a task"""
-#    sql = text("DELETE FROM tasks WHERE id=:id")
-#    db.session.execute(sql, {"id":task_id})
-#    db.session.commit()
+def get_tasks_by_group(group_id):
+    """Function to get ALL tasks by group_id"""
+    sql = text("SELECT T.id, T.name FROM Tasks T " \
+           "WHERE T.group_id = :group_id " \
+           "ORDER BY T.id")
+    result = db.session.execute(sql, {"group_id": group_id})
+    return result
