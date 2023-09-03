@@ -152,16 +152,6 @@ def all_tasks():
                            total_tasks=total_tasks,
                            per_page=per_page)
 
-#this does not work yet############################
-@app.route("/usersTasks/<int:user_id>", )
-def users_tasks():
-    """List all tasks for the user logged in
-    Here the user should see all tasks that are assigned to them in all groups
-    or the tasks that they has created"""
-    user_id = users.user_id()
-    task_list = list(tasks.get_all_tasks(user_id))
-    return render_template('./usersTasks.html', tasks=task_list)
-
 @app.route("/task/<int:task_id>", methods=["GET","POST"])
 def task(task_id):
     """Main page for task where user can see task name
@@ -193,42 +183,45 @@ def task(task_id):
 
 @app.route("/editTask/<int:task_id>", methods=["GET","POST"])
 def edit_task(task_id):
-    """Edit task page where user can edit task name
-    and description
-    If user is leader of the group, they can also assign task to other users
-    and change the status of the task
-    Also if user has created the task, they can delete it or change the deadline
-    So always the creator of the task can edit it"""
+    try:
+        task_to_edit = tasks.get_task(task_id)
+        if not task_to_edit:
+            return "Task not found", 404
 
-    task_to_edit = tasks.get_task(task_id)
-    if not task_to_edit:
-        return "Task not found", 404
+        user_info = {'id': users.user_id(), 'name': users.username(), 'role': users.isleader()}
 
-    if request.method == "GET":
+        if request.method == "GET":
+            if task_to_edit['group_id']:
+                users_in_group = groups.get_users(task_to_edit['group_id'])
+            else:
+                users_in_group = []
 
-        if task_to_edit['group_id']:
-            users_in_group = groups.get_users(task_to_edit['group_id'])
-            return render_template('./editTask.html', task=task_to_edit)
-        else:
-            users_in_group = []
-        return render_template('./editTask.html', task=task_to_edit, users_in_group=users_in_group)
-    
-    if request.method == "POST":
-        user_token = request.form.get('csrf_token')
-        server_token = session.get('csrf_token')
-        if not user_token or user_token != server_token:
-            abort(403)
-        new_name = request.form["task_name"]
-        new_description = request.form["task_description"]
-        new_deadline = request.form["task_deadline"]
-        new_assignee = request.form.get("assignee") 
-        if new_assignee:
-            tasks.set_assigned_time(task_id, new_assignee)
-        tasks.edit_task_name(task_id, new_name)
-        tasks.edit_description(task_id, new_description)
-        tasks.edit_deadline(task_id, new_deadline)
-        return redirect("/task/"+str(task_id))
-    return render_template("error.html", message="Unknown error")
+            return render_template('./editTask.html', task=task_to_edit, user=user_info, users_in_group=users_in_group)
+
+        if request.method == "POST":
+            user_token = request.form.get('csrf_token')
+            server_token = session.get('csrf_token')
+            if not user_token or user_token != server_token:
+                abort(403)
+            new_name = request.form["task_name"]
+            new_description = request.form["task_description"]
+            new_deadline = request.form["task_deadline"]
+            new_assignee = request.form.get("assignee")
+
+
+            if new_assignee:
+                tasks.set_assigned_time(task_id, new_assignee)
+            tasks.edit_task_name(task_id, new_name)
+            tasks.edit_description(task_id, new_description)
+            tasks.edit_deadline(task_id, new_deadline)
+            return redirect("/task/"+str(task_id))
+        return render_template("error.html", message="Unknown error")
+    except Exception as e:
+        return render_template("error.html", message=str(e))
+
+
+
+
 
 @app.route("/createGroup", methods=["GET", "POST"])
 def create_group():
@@ -273,14 +266,11 @@ def create_group():
 @app.route("/allGroups")
 def all_groups():
     """List all groups for the user logged in"""
-    print("Entered all_groups function")  # Debug print
     page = request.args.get('page', 1, type=int)
     per_page = 10
 
     user_id = users.user_id()
     users_all_groups = list(groups.get_groups(user_id))
-
-    print("All Groups:", users_all_groups)  # Debug print
 
     total_groups= len(users_all_groups)
     start = (page - 1) * per_page
@@ -355,7 +345,7 @@ def add_user():
     if request.method == "POST":
         user_id = request.form.get("user")
         group_id = request.form.get("group")
-        if groups.add_user_to_group(user_id, group_id):  # Note the change here
+        if groups.add_user_to_group(user_id, group_id):  
             flash("User added successfully", 'success')
         else:
             flash("User addition failed", 'error')

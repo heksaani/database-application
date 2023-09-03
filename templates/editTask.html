@@ -41,7 +41,7 @@
   <label for="assignee">Assign to:</label><br />
   <select id="assignee" name="assignee">
     {% for u in users_in_group %}
-      <option value="{{ u.id }}" {% if "u".id == task.assignee_id %}selected{% endif %}>{{ u.username }}</option>
+    <option value="{{ u.id }}" {% if u.id == task.assignee_id %}selected{% endif %}>{{ u.username }}</option>
     {% endfor %}
   </select><br /><br />
 {% endif %}
