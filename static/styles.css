@@ -30,3 +30,57 @@
     cursor: pointer;
     border-radius: 12px;
 }
+
+.group-wrapper {
+    margin: 20px;
+}
+
+.group-info {
+    padding: 20px;
+    background-color: #f2f2f2;
+    border-radius: 10px;
+}
+
+.member-list {
+    list-style-type: disc;
+    margin-left: 40px;
+}
+
+.task-list {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.task-box {
+    width: 200px;
+    padding: 10px;
+    margin: 10px;
+    background-color: #ddd;
+    border-radius: 5px;
+}
+
+.task-actions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.task-action-btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.task-action-form {
+    display: inline;
+}
+
+.delete-btn {
+    background-color: red;
+    color: white;
+}
+
+.back-button {
+    margin-top: 20px;
+}

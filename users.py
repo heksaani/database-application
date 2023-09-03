@@ -36,15 +36,6 @@ def register(user_name, password, role):
     db.session.commit()
     return login(user_name, password)
 
-
-def logout():
-    """Logout handler"""""
-    del session["user_id"]
-    del session["username"]
-    del session["role"]
-    del session["csrf_token"]
-
-
 def user_id():
     """returns user_id from session"""
     return session.get("user_id", 0)
