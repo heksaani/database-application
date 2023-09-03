@@ -13,7 +13,7 @@
   
     {% if task.creator_id == session.user_id %} 
         <label for="deadline">Deadline:</label><br>
-        <input type="date" id="deadline" name="deadline" value="{{ task.deadline.strftime('%Y-%m-%d') }}" required><br><br>
+        <input type="date" id="task_deadline" name="task_deadline" value="{{ task.deadline.strftime('%Y-%m-%d') }}" required><br><br>
     {% endif %}
 
     <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
