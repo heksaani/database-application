@@ -1,70 +1,93 @@
-{% extends "layout.html" %} 
-{% block content %}
-<!--back to all tasks -->
-<div class="back_to_tasks">
-  <a href="/allTasks">
-    <button>Back to Tasks</button>
-  </a>
-{% if session.username %}
-    <div class="task_mainpage"></div>
-    <h1><strong>{{ task['name'] }}</strong></h1>
-    <p>{{ task['description'] }}</p>
-    <p>
-        Status: {{ task['status'] }}<br>
-        Deadline: {{ task['deadline'].day }} {{ task['deadline'].strftime("%B") }} 
-        {{ task['deadline'].year }} (in {{ (task['deadline']-date).days }} days)
-    </p>
-    <br>
-    <div class="edit_task">
-      <div class="edit_task_wrapper">
-        <p>Edit task</p>
-        <a href='/editTask/{{ task.id }}' class="task-edit-button">
-          <button class="custom-button">Edit</button>
-        </a>
-        {% if task["assignee_id"] == session["user_id"] %}
-        <form id="deleteForm" action="{{ url_for('task', task_id=task.id) }}" method="POST">
-          <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
-          <input type="hidden" name="action" value="delete_task">
-          <button type="button" class="custom-button" onclick="confirmDelete()">Delete Task</button>
-        </form>
-    {% endif %}
+<!DOCTYPE html>
+{% extends "layout.html" %} {% block content %}
+<div class="row">
+  <div class="col-md-12 mb-3">
+    <a href="/allTasks" class="btn btn-secondary">Back to Tasks</a>
   </div>
 </div>
-<script>
-function confirmDelete() {
-  if (confirm('Are you sure you want to delete this task?')) {
-    document.getElementById('deleteForm').submit();
-  }
-}
-</script>
 
-    {% if task["assignee_id"] == session["user_id"] %}
-    <div class="update_status">
-      <p>Change Status:</p>
-      <br>
-      <form action ="{{ url_for('task', task_id=task.id) }}" method="POST">
-        <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
-        <input type="hidden" name="new_status" value="Not Started">
-        <input type="hidden" name="action" value="update_status">
-        <button type="submit" class="custom-button">Mark as Not Started</button>
-    </form>
-      <form action="{{ url_for('task', task_id=task.id) }}" method="POST">
-        <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
-        <input type="hidden" name="new_status" value="In Progress">
-        <input type="hidden" name="action" value="update_status">
-        <button type="submit" class = "custom-button">Mark as In Progress</button>
-    </form>
-    <form action="{{ url_for('task', task_id=task.id) }}" method="POST">
-        <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
-        <input type="hidden" name="new_status" value="Completed">
-        <input type="hidden" name="action" value="update_status">
-        <button type="submit" class="custom-button">Mark as Completed</button>
-    </form>
+<div class="container">
+  {% if session.username %}
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-8">
+              <h5 class="card-title">{{ task['name'] }}</h5>
+              <p class="card-text">{{ task['description'] }}</p>
+              <p class="card-text">Status: {{ task['status'] }}</p>
+              <p class="card-text">
+                Deadline: {{ task['deadline'].day }} {{
+                task['deadline'].strftime("%B") }} {{ task['deadline'].year }}
+                (in {{ (task['deadline']-date).days }} days)
+              </p>
+              {% if task["assignee_id"] == session["user_id"] %}
+              <p class="card-text">Assigned to: You</p>
+              {% else %}
+              <p class="card-text">Assigned to: {{ assignee['username'] }}</p>
+              {% endif %}
+              <a href="/editTask/{{ task.id }}" class="btn btn-primary">Edit</a>
+              <br />
+            </div>
+            <div class="col-md-4 text-right">
+              <form action="/task/{{ task.id }}" method="post">
+                <div class="form-group">
+                  <label for="status">Change status:</label>
+                  <select name="status" id="status" class="form-control">
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                  </select>
+                </div>
+                <input
+                  type="hidden"
+                  name="csrf_token"
+                  value="{{ session['csrf_token'] }}"
+                />
+                <br />
+                <input
+                  type="submit"
+                  value="Update Status"
+                  class="btn btn-secondary"
+                />
+              </form>
+              <br />
+              <form
+                id="deleteForm"
+                action="{{ url_for('task', task_id=task.id) }}"
+                method="POST"
+                style="display: inline"
+              >
+                <input
+                  type="hidden"
+                  name="csrf_token"
+                  value="{{ session['csrf_token'] }}"
+                />
+                <input type="hidden" name="action" value="delete_task" />
+                <button
+                  type="button"
+                  onclick="confirmDelete()"
+                  class="btn btn-danger"
+                >
+                  Delete Task
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <p>You are not logged in or do not have the right permissions.</p>
+      <a href="/">Front page</a>
+      {% endif %}
     </div>
+    <script>
+      function confirmDelete() {
+        if (confirm("Are you sure you want to delete this task?")) {
+          document.getElementById("deleteForm").submit();
+        }
+      }
+    </script>
+    {% endblock %}
   </div>
-  {% endif %}
-{% else %}
-    <p>You are not logged in!</p>
-{% endif %}
-
-{% endblock %}
+</div>
