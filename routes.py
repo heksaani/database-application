@@ -169,12 +169,11 @@ def task(task_id):
         if new_status:
             tasks.change_task_status(task_id, new_status)
             return redirect("/task/"+str(task_id))
-        
         action = request.form.get('action')
         if action   == "delete_task":
             tasks.delete_task(task_id)
             return redirect("/allTasks")
-        
+
     task_info = tasks.get_task(task_id)
     user_info = {'id' : users.user_id(),
                  'name' : users.username(),
@@ -211,7 +210,7 @@ def edit_task(task_id):
         return redirect("/task/"+str(task_id))
     return render_template("error.html", message="Unknown error")
 
-############gourps#############
+############groups#############
 @app.route("/createGroup", methods=["GET", "POST"])
 def create_group():
     """Group creation handler
@@ -255,16 +254,21 @@ def create_group():
 @app.route("/allGroups")
 def all_groups():
     """List all groups for the user logged in"""
+    print("Entered all_groups function")  # Debug print
     page = request.args.get('page', 1, type=int)
     per_page = 10
+
     user_id = users.user_id()
     users_all_groups = list(groups.get_groups(user_id))
+
+    print("All Groups:", users_all_groups)  # Debug print
+
     total_groups= len(users_all_groups)
     start = (page - 1) * per_page
     end = start + per_page
     paginated_groups= users_all_groups[start:end]
 
-    return render_template('./allTasks.html', tasks=paginated_groups, total_groups=total_groups, per_page=per_page)
+    return render_template('./allGroups.html', groups=paginated_groups, total_groups=total_groups, per_page=per_page)
 
 @app.route("/error")
 def error():
