@@ -181,46 +181,46 @@ def task(task_id):
                  'role' : users.isleader()}
     return render_template('./task.html',task=task_info, date=datetime.now().date(), user=user_info)
 
-@app.route("/editTask/<int:task_id>", methods=["GET","POST"])
+@app.route("/editTask/<int:task_id>", methods=["GET", "POST"])
 def edit_task(task_id):
-    try:
-        task_to_edit = tasks.get_task(task_id)
-        if not task_to_edit:
-            return "Task not found", 404
+    """Edit task page where user can edit task name and description"""
+    
+    task_to_edit = tasks.get_task(task_id)
+    if not task_to_edit:
+        return "Task not found", 404
 
-        user_info = {'id': users.user_id(), 'name': users.username(), 'role': users.isleader()}
+    user_info = {'id': users.user_id(), 'name': users.username(), 'role': users.isleader()}
 
-        if request.method == "GET":
-            if task_to_edit['group_id']:
-                users_in_group = groups.get_users(task_to_edit['group_id'])
-            else:
-                users_in_group = []
+    if request.method == "GET":
+        if task_to_edit['group_id']:
+            users_in_group = groups.get_users(task_to_edit['group_id'])
+        else:
+            users_in_group = []
 
-            return render_template('./editTask.html', task=task_to_edit, user=user_info, users_in_group=users_in_group)
+        return render_template('./editTask.html', task=task_to_edit, user=user_info, users_in_group=users_in_group)
 
-        if request.method == "POST":
-            user_token = request.form.get('csrf_token')
-            server_token = session.get('csrf_token')
-            if not user_token or user_token != server_token:
-                abort(403)
-            new_name = request.form["task_name"]
-            new_description = request.form["task_description"]
-            new_deadline = request.form["task_deadline"]
-            new_assignee = request.form.get("assignee")
+    elif request.method == "POST":
+        user_token = request.form.get('csrf_token')
+        server_token = session.get('csrf_token')
+        
+        if not user_token or user_token != server_token:
+            abort(403)
+        
+        new_name = request.form["task_name"]
+        new_description = request.form["task_description"]
+        new_deadline = request.form["task_deadline"]
+        new_assignee = request.form.get("assignee")
 
+        if new_assignee:
+            tasks.set_assigned_time(task_id, new_assignee)
+        
+        tasks.edit_task_name(task_id, new_name)
+        tasks.edit_description(task_id, new_description)
+        tasks.edit_deadline(task_id, new_deadline)
+        
+        return redirect("/task/" + str(task_id))
 
-            if new_assignee:
-                tasks.set_assigned_time(task_id, new_assignee)
-            tasks.edit_task_name(task_id, new_name)
-            tasks.edit_description(task_id, new_description)
-            tasks.edit_deadline(task_id, new_deadline)
-            return redirect("/task/"+str(task_id))
-        return render_template("error.html", message="Unknown error")
-    except Exception as e:
-        return render_template("error.html", message=str(e))
-
-
-
+    return render_template("error.html", message="Unknown error")
 
 
 @app.route("/createGroup", methods=["GET", "POST"])
