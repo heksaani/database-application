@@ -1,52 +1,84 @@
 <!DOCTYPE html>
-{% extends "layout.html" %} 
-{% block content %}
+{% extends "layout.html" %} {% block content %}
 <div class="group-wrapper">
-    {% if session.username and session.role %}
-        <h1>Group Details</h1>
-        <div class="group-info">
-            <p><strong>Group Name:</strong> {{ group[0].name }}</p>
-            <p><strong>Number of Members:</strong> {{ members|length }}</p>
-            <p><strong>Number of Tasks:</strong> {{ tasks|length }}</p>
-            <p><strong>Users in Group:</strong></p>
-            <ul class="member-list">
-                {% for member in members %}
-                    <li>{{ member['username'] }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="task-list">
-            {% for task in tasks %}
-                <div class="task-box">
-                    <p>{{ task['name'] }}</p>
-                    <div class="task-actions">
-                        <a href="/editTask/{{ task.id }}" class="task-action-btn">Edit</a>
-                        <a href="/task/{{ task.id }}" class="task-action-btn">View</a>
-                        <form id="deleteForm" action="{{ url_for('task', task_id=task.id) }}" method="POST" class="task-action-form">
-                            <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
-                            <input type="hidden" name="action" value="delete_task">
-                            <button type="button" onclick="confirmDelete()" class="task-action-btn delete-btn">Delete</button>
-                        </form>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-        <script>
-            function confirmDelete() {
-                if (confirm('Are you sure you want to delete this task?')) {
-                    document.getElementById('deleteForm').submit();
-                }
-            }
-        </script>
+  {% if session.username and session.role %}
+  <h1>Group Details</h1>
+  <div class="group-info">
+    <p><strong>Group Name:</strong> {{ group[0].name }}</p>
+    <p><strong>Number of Members:</strong> {{ members|length }}</p>
+    <p><strong>Number of Tasks:</strong> {{ tasks|length }}</p>
+    <p><strong>Users in Group:</strong></p>
+    <ul class="member-list">
+      {% for member in members %}
+      <li>{{ member['username'] }}</li>
+      {% endfor %}
+    </ul>
+  </div>
 
-        <div class="back-button">
-            <a href="/allGroups">
-                <button>Back to Groups</button>
-            </a>
+  <div class="task-list">
+    {% for task in tasks %}
+    <div class="task-box">
+      <p>{{ task['name'] }}</p>
+      <div class="task-actions">
+        <a href="/editTask/{{ task.id }}" class="task-action-btn">Edit</a>
+        <a href="/task/{{ task.id }}" class="task-action-btn">View</a>
+        <form
+          id="deleteForm"
+          action="{{ url_for('task', task_id=task.id) }}"
+          method="POST"
+          class="task-action-form"
+        >
+          <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ session['csrf_token'] }}"
+          />
+          <input type="hidden" name="action" value="delete_task" />
+          <button
+            type="button"
+            onclick="confirmDelete()"
+            class="task-action-btn delete-btn"
+          >
+            Delete
+          </button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Time Spent</h5>
+        <div class="task-time">
+          {% for task in tasks %}
+          <div class="task-box">
+            <p>
+              Time Spent on {{ task['name'] }}: {{ time_spent.get(task.id, '0')
+              }} hours
+            </p>
+          </div>
+          {% endfor %}
         </div>
-    {% else %}
-        <p>You are not logged in or do not have the right permissions.</p>
-        <a href="/">Front page</a>
-    {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="back-button">
+    <a href="/allGroups">
+      <button>Back to Groups</button>
+    </a>
+  </div>
+  {% else %}
+  <p>You are not logged in or do not have the right permissions.</p>
+  <a href="/">Front page</a>
+  {% endif %}
 </div>
+<script>
+  function confirmDelete() {
+    if (confirm("Are you sure you want to delete this task?")) {
+      document.getElementById("deleteForm").submit();
+    }
+  }
+</script>
 {% endblock %}
