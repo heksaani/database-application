@@ -28,18 +28,10 @@ CREATE TABLE Tasks (
     deadline DATE
 );
 
-CREATE TABLE Comments (
-    id SERIAL PRIMARY KEY,
-    content TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    task_id INTEGER REFERENCES Tasks ON DELETE CASCADE,
-    user_id INTEGER REFERENCES Users ON DELETE CASCADE
-);
-
 CREATE TABLE TaskTime (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES Users,
     task_id INTEGER REFERENCES Tasks,
     time_spent INTERVAL,
-    logged_at TIMESTAMP DEFAULT NOW()
+    assigned_at TIMESTAMP DEFAULT NOW()
 );
