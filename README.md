@@ -3,27 +3,26 @@ An app to manage task completion and time management for users and groups. Leade
 
 Features of the application include: 
 - User login and registration (x)
-- User can create tasks for themselves, these are only visible for themselves and can be edited and deleted by the user
-- Leaders can create groups and add users to the groups
-- Leaders can create tasks for group, and only leader can delte tasks in this group
-- Users can add comment to the tasks 
-- Tasks can have status of completed, in progress or not started, or late 
-- Leader can assign tasks to users
-- Leader can see progress of group members
-- Leader can set a deadline for tasks
-- Leader can see how much time a task took to complete
+- User can create tasks for themselves, these are only visible for themselves and can be edited and deleted by the user (z)
+- Leaders can create groups and add users to the groups (x)
+- Leaders can create tasks for group, and only leader can delete tasks in this group (x)
+- Tasks can have status of completed, in progress or not started, or late (x)
+- Leader can assign tasks to users (x)
+- Leader can see progress of group members (x)
+- Leader can set a deadline for tasks (x)
+- Leader can see how much time a task took to complete (x)
 - Leader can see how much time a user spent on tasks
 
 Currently working features:
 1. Registration, login
 2. Task creation
-3. Can view tasks in a list
-4. Can view individual tasks
-5. Leader can create a group
-6. Leader can view a list of roups (this need the links to pages still)
-7. Add member to group (this does not work, need debugging)
-8. Leader can select group to which assign the task 
-9. Edit task somehow does not work
+3. Can view tasks in one page and click to see individual tasks
+5. Leader can create groups
+6. Leader can add tasks to groups
+7. Leader can assign task to users
+8. Task can be edited (name, status, description, deadline, delete task)
+9. Can see time spent on task 
+
 
 How to use (local):
 Clone the repository to your machine and move to its root folder.
