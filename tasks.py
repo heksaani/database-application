@@ -117,7 +117,7 @@ def get_tasks_by_group(group_id):
 
 def get_time_for_task(group_id):
     """Function to get time spent doing tasks by group_id"""
-    query = text("""SELECT task_id, SUM(time_spent) 
+    query = text("""SELECT task_id, SUM(time_spent)
                     FROM TaskTime 
                     WHERE task_id IN (SELECT id FROM Tasks WHERE group_id = :group_id) 
                     GROUP BY task_id""")
@@ -129,10 +129,10 @@ def get_time_for_task(group_id):
         result_dict[row[0]] = row[1]
     return result_dict
 
-def update_time_spent(task_id, time_spent):
+def update_time_spent(task_id, user_id):
     """Function to update time spent on a task"""
-    query = text("""UPDATE TaskTime SET time_spent = NOW() - assigned_at 
-                    WHERE task_id = :task_id AND user_id = :user_id""")
+    query = text("""UPDATE TaskTime SET time_spent = NOW() - assigned_at
+                     WHERE task_id = :task_id AND user_id = :user_id""")
     db.session.execute(query, {'task_id': task_id, 'user_id': user_id})
     db.session.commit()
 
@@ -142,4 +142,3 @@ def set_assigned_time(task_id, user_id):
                  VALUES (:task_id, :user_id, NOW())""")
     db.session.execute(query, {'task_id': task_id, 'user_id': user_id})
     db.session.commit()
-

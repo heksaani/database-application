@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+{% extends "layout.html" %} {% block content %}
+<title>Add User</title>
+{% if session.username and session.role%}
+<h1>Add User</h1>
+<form action="/addUser" method="post">
+  <div class="form-group">
+    <label for="user">User:</label>
+    <select name="user" id="user" class="form-control">
+      {% for user in users %}
+      <option value="{{ user.id }}">{{ user.username }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="group">Group:</label>
+    <select name="group" id="group" class="form-control">
+      # {% for group in groups %}
+      <option value="{{ group.id }}">{{ group.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <br />
+  <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}" />
+  <input type="submit" value="Add User" class="btn btn-primary" />
+</form>
+{% else %}
+<p>You are not authorized to view this page.</p>
+{% endif %} {% endblock %}
