@@ -203,11 +203,16 @@ def edit_task(task_id):
     task_to_edit = tasks.get_task(task_id)
     if not task_to_edit:
         return "Task not found", 404
-    
-    if request.method == "GET":
-        users_in_group = groups.get_users(task_to_edit.group_id)
-        return render_template('./editTask.html', task=task_to_edit)
 
+    if request.method == "GET":
+
+        if task_to_edit['group_id']:
+            users_in_group = groups.get_users(task_to_edit['group_id'])
+            return render_template('./editTask.html', task=task_to_edit)
+        else:
+            users_in_group = []
+        return render_template('./editTask.html', task=task_to_edit, users_in_group=users_in_group)
+    
     if request.method == "POST":
         user_token = request.form.get('csrf_token')
         server_token = session.get('csrf_token')
@@ -216,6 +221,9 @@ def edit_task(task_id):
         new_name = request.form["task_name"]
         new_description = request.form["task_description"]
         new_deadline = request.form["task_deadline"]
+        new_assignee = request.form.get("assignee") 
+        if new_assignee:
+            tasks.set_assigned_time(task_id, new_assignee)
         tasks.edit_task_name(task_id, new_name)
         tasks.edit_description(task_id, new_description)
         tasks.edit_deadline(task_id, new_deadline)

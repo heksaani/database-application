@@ -142,3 +142,9 @@ def set_assigned_time(task_id, user_id):
                  VALUES (:task_id, :user_id, NOW())""")
     db.session.execute(query, {'task_id': task_id, 'user_id': user_id})
     db.session.commit()
+
+def assign_task_to_user(task_id, user_id):
+    """Assigns a task to a user by updating the assignee_id field in the Tasks table."""
+    sql = text("UPDATE Tasks SET assignee_id=:user_id WHERE id=:task_id")
+    db.session.execute(sql, {"user_id": user_id, "task_id": task_id})
+    db.session.commit()

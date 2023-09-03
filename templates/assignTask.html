@@ -1,11 +1,21 @@
-{% extends "layout.html" %} 
-{% block content %}
+<!DOCTYPE html>
+{% extends "layout.html" %} {% block content %}
 <title>Assign task</title>
 
-{% if session.username %} {% if session.role %}
-<select name="assignee">
-    {% for user in users %}
-        <option value="{{ user.id }}">{{ user.username }}</option>
-    {% endfor %}
-</select>
-
+{% if session.username and session.role %}
+<h1>Assign Task</h1>
+<form action="/assignTask" method="post">
+  <div class="form-group">
+    <label for="assignee">Assign task to:</label>
+    <select name="assignee" id="assignee" class="form-control">
+      {% for user in users %}
+      <option value="{{ user.id }}">{{ user.username }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}" />
+  <input type="submit" value="Assign Task" class="btn btn-primary" />
+</form>
+{% else %}
+<p>You are not authorized to view this page.</p>
+{% endif %} {% endblock %}
