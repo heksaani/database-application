@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 {% extends "layout.html" %} 
 {% block content %}
 <title>Create new task</title>
@@ -20,11 +21,13 @@
         {% if session.role %}
             <p>Select group</p>
             <select name="group_id" id="groupSelect">
+                <option value="" selected>-- Select a group or none --</option> 
                 {% for group in groups %}
                     <option value="{{ group.id }}">{{ group.name }}</option>
                 {% endfor %}
             </select>
         {% endif %}
+        <br>
         <br>
         <input type="submit" value="Create task" id="submitBtn">
     </form>
