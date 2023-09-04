@@ -38,11 +38,11 @@ How to use (local): \
 $ git clone https://github.com/heksaani/database-application.git
 $ cd database-application
 ```
-2. create a local .env file and insert your local DATABASE_URL and own SECRET_KEY \ 
-   example .env:
+2. create a local .env file and insert your local DATABASE_URL and own SECRET_KEY 
 ```
 $ touch .env
 ```
+example .env:
 ```
 DATABASE_URL="postgresql+psycopg2://username@localhost:5432/username
 SECRET_KEY=92fsdf0h
