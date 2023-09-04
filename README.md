@@ -31,7 +31,9 @@ DATABASE_URL=postgresql+psycopg2://
 SECRET_KEY=87dk98hlloiyuh
 Next, activate the virtual environment and install the application's dependencies using the commands
 
+```pyton
 $ python3 -m venv venv
+```
 
 $ source venv/bin/activate
 
