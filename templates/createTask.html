@@ -1,82 +1,95 @@
 <!DOCTYPE html>
-{% extends "layout.html" %} 
-{% block content %}
+{% extends "layout.html" %} {% block content %}
 <title>Create new task</title>
 
 {% if session.username %}
 <div class="createTask">
-    <form action="/createTask" method="POST" id="createTaskForm">
-        <h1>Create a task</h1>
-        <br>
-        <p>Task name:</p>
-        <input type="text" name="name" id="taskName" minlength="1" maxlength="50" required><br>
-        <br>
-        <p>Task description:</p>
-        <input type="text" name="description" id="taskDescription" maxlength="300"><br>
-        <br>
-        <p>Task deadline:</p>
-        <input type="date" name="deadline" id="taskDeadline" required><br>
-        <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
-        <br>
-        {% if session.role %}
-            <p>Select group</p>
-            <select name="group_id" id="groupSelect">
-                <option value="" selected>-- Select a group or none --</option> 
-                {% for group in groups %}
-                    <option value="{{ group.id }}">{{ group.name }}</option>
-                {% endfor %}
-            </select>
-        {% endif %}
-        <br>
-        <br>
-        <input type="submit" value="Create task" id="submitBtn">
-    </form>
+  <form action="/createTask" method="POST" id="createTaskForm">
+    <h1>Create a task</h1>
+    <br />
+    <p>Task name:</p>
+    <input
+      type="text"
+      name="name"
+      id="taskName"
+      minlength="1"
+      maxlength="50"
+      required
+    /><br />
+    <br />
+    <p>Task description:</p>
+    <input
+      type="text"
+      name="description"
+      id="taskDescription"
+      maxlength="300"
+    /><br />
+    <br />
+    <p>Task deadline:</p>
+    <input type="date" name="deadline" id="taskDeadline" required /><br />
+    <input
+      type="hidden"
+      name="csrf_token"
+      value="{{ session['csrf_token'] }}"
+    />
+    <br />
+    {% if session.role %}
+    <p>Select group</p>
+    <select name="group_id" id="groupSelect">
+      <option value="" selected>-- Select a group or none --</option>
+      {% for group in groups %}
+      <option value="{{ group.id }}">{{ group.name }}</option>
+      {% endfor %}
+    </select>
+    {% endif %}
+    <br />
+    <br />
+    <input type="submit" value="Create task" id="submitBtn" />
+  </form>
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const form = document.getElementById("createTaskForm");
-        const taskName = document.getElementById("taskName");
-        const taskDeadline = document.getElementById("taskDeadline");
-        const submitBtn = document.getElementById("submitBtn");
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("createTaskForm");
+    const taskName = document.getElementById("taskName");
+    const taskDeadline = document.getElementById("taskDeadline");
+    const submitBtn = document.getElementById("submitBtn");
 
-        function validateDate(inputDate) {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0); // Reset time to midnight
-            const deadline = new Date(inputDate);
-            deadline.setHours(0, 0, 0, 0); // Reset time to midnight
-            
-            return deadline >= today;
-        }
+    function validateDate(inputDate) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset time to midnight
+      const deadline = new Date(inputDate);
+      deadline.setHours(0, 0, 0, 0); // Reset time to midnight
 
-        form.addEventListener("input", function() {
-            if (taskName.value || taskDeadline.value) {
-                submitBtn.disabled = false; // Enable the button
-            } else {
-                submitBtn.disabled = true; // Disable the button
-            }
-        });
+      return deadline >= today;
+    }
 
-        form.addEventListener("submit", function(event) {
-            let isValid = true;
-            if (!validateDate(taskDeadline.value)) {
-                isValid = false;
-                alert("Date cannot be in the past");
-            }
-            if (!taskName.value) {
-                isValid = false;
-                alert("Task name cannot be empty");
-            }
-            if (!isValid) {
-                event.preventDefault(); // Prevent form submission
-            }
-        });
+    form.addEventListener("input", function () {
+      if (taskName.value || taskDeadline.value) {
+        submitBtn.disabled = false; // Enable the button
+      } else {
+        submitBtn.disabled = true; // Disable the button
+      }
     });
+
+    form.addEventListener("submit", function (event) {
+      let isValid = true;
+      if (!validateDate(taskDeadline.value)) {
+        isValid = false;
+        alert("Date cannot be in the past");
+      }
+      if (!taskName.value) {
+        isValid = false;
+        alert("Task name cannot be empty");
+      }
+      if (!isValid) {
+        event.preventDefault(); // Prevent form submission
+      }
+    });
+  });
 </script>
-
-
 {% else %}
-    <p>You are not logged in</p>
-    <a href="/login">Log in</a>
-{% endif %}
-{% endblock %}
+<div class="alert alert-warning" role="alert">You are not logged in!</div>
+<a href="/login" class="btn btn-secondary">Login</a>
+<a href="/register" class="btn btn-secondary">Register</a>
+{% endif %} {% endblock %}

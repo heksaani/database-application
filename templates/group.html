@@ -70,8 +70,9 @@
     </a>
   </div>
   {% else %}
-  <p>You are not logged in or do not have the right permissions.</p>
-  <a href="/">Front page</a>
+  <div class="alert alert-warning" role="alert">You are not logged in!</div>
+  <a href="/login" class="btn btn-secondary">Login</a>
+  <a href="/register" class="btn btn-secondary">Register</a>
   {% endif %}
 </div>
 <script>

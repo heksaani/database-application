@@ -1,11 +1,5 @@
 <!DOCTYPE html>
 {% extends "layout.html" %} {% block content %}
-<div class="row">
-  <div class="col-md-12 mb-3">
-    <a href="/allTasks" class="btn btn-secondary">Back to Tasks</a>
-  </div>
-</div>
-
 <div class="container">
   {% if session.username %}
   <div class="row">
@@ -76,18 +70,25 @@
           </div>
         </div>
       </div>
-      {% else %}
-      <p>You are not logged in or do not have the right permissions.</p>
-      <a href="/">Front page</a>
-      {% endif %}
+      <div class="row">
+        <div class="col-md-12 mb-3">
+          <a href="/allTasks" class="btn btn-secondary">Back to Tasks</a>
+        </div>
+      </div>
     </div>
-    <script>
-      function confirmDelete() {
-        if (confirm("Are you sure you want to delete this task?")) {
-          document.getElementById("deleteForm").submit();
-        }
-      }
-    </script>
-    {% endblock %}
+    {% else %}
+    <div class="alert alert-warning" role="alert">You are not logged in!</div>
+    <a href="/login" class="btn btn-secondary">Login</a>
+    <a href="/register" class="btn btn-secondary">Register</a>
+    {% endif %}
   </div>
+  <script>
+    function confirmDelete() {
+      if (confirm("Are you sure you want to delete this task?")) {
+        document.getElementById("deleteForm").submit();
+      }
+    }
+  </script>
+  {% endblock %}
 </div>
+```

@@ -16,6 +16,7 @@ def make_csrf_token():
 @app.route("/")
 def index():
     """Index handler"""
+    print("Accessed index route")  # Debugging line
     return render_template("index.html")
 
 @app.route("/login", methods=["POST", "GET"])
@@ -120,11 +121,14 @@ def create_task():
 
 @app.route("/assignTask/<int:task_id>", methods=["GET", "POST"])
 def assign_task(task_id):
-    """Assign task to user in a group.
-    This can only be done by the leader of the group."""
+    """Assign task to user handler"""
+    if 'username' not in session:
+        return render_template("assignTask.html")
+
     if request.method == "GET":
         users_in_group = groups.get_users(task_id)
-        return render_template("assignTask.html", users=users_in_group)
+        return render_template("assignTask.html", users=users_in_group, task_id=task_id)
+
     elif request.method == "POST":
         user_token = request.form.get('csrf_token')
         server_token = session.get('csrf_token')
@@ -184,10 +188,17 @@ def task(task_id):
 @app.route("/editTask/<int:task_id>", methods=["GET", "POST"])
 def edit_task(task_id):
     """Edit task page where user can edit task name and description"""
-    
+
+    print("Task ID:", task_id)  # Debugging line
+
     task_to_edit = tasks.get_task(task_id)
+    print("Task to Edit:", task_to_edit)  # Debugging line
+
     if not task_to_edit:
         return "Task not found", 404
+
+    if 'username' not in session:
+        return redirect("/login")
 
     user_info = {'id': users.user_id(), 'name': users.username(), 'role': users.isleader()}
 
@@ -197,15 +208,19 @@ def edit_task(task_id):
         else:
             users_in_group = []
 
-        return render_template('./editTask.html', task=task_to_edit, user=user_info, users_in_group=users_in_group)
+        return render_template('./editTask.html', task=task_to_edit,
+                               user=user_info, users_in_group=users_in_group)
 
-    elif request.method == "POST":
+    print("Task ID:", task_id)
+    print("Task to Edit:", task_to_edit)
+
+    if request.method == "POST":
         user_token = request.form.get('csrf_token')
         server_token = session.get('csrf_token')
-        
+
         if not user_token or user_token != server_token:
             abort(403)
-        
+
         new_name = request.form["task_name"]
         new_description = request.form["task_description"]
         new_deadline = request.form["task_deadline"]
@@ -213,11 +228,11 @@ def edit_task(task_id):
 
         if new_assignee:
             tasks.set_assigned_time(task_id, new_assignee)
-        
+
         tasks.edit_task_name(task_id, new_name)
         tasks.edit_description(task_id, new_description)
         tasks.edit_deadline(task_id, new_deadline)
-        
+
         return redirect("/task/" + str(task_id))
 
     return render_template("error.html", message="Unknown error")
@@ -345,7 +360,7 @@ def add_user():
     if request.method == "POST":
         user_id = request.form.get("user")
         group_id = request.form.get("group")
-        if groups.add_user_to_group(user_id, group_id):  
+        if groups.add_user_to_group(user_id, group_id):
             flash("User added successfully", 'success')
         else:
             flash("User addition failed", 'error')

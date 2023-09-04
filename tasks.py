@@ -116,7 +116,7 @@ def get_tasks_by_group(group_id):
     return result
 
 def get_time_for_task(group_id):
-    """Function to get time spent doing tasks by group_id"""
+    """Function to return a dictionary of task_id: time_spent for a group"""
     query = text("""SELECT task_id, SUM(time_spent)
                     FROM TaskTime 
                     WHERE task_id IN (SELECT id FROM Tasks WHERE group_id = :group_id) 
