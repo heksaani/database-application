@@ -1,5 +1,5 @@
 # Task manager 
-! Currently only in local use !
+! Currently only in local use ! \
 An app to manage task completion and time management for users and groups. Leaders can give group members tasks and see their progress. Users can also create their own tasks for themselves and mark them as completed. 
 
 Features of the application include: 
