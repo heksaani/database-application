@@ -1,4 +1,5 @@
 # Task manager 
+! Currently only in local use !
 An app to manage task completion and time management for users and groups. Leaders can give group members tasks and see their progress. Users can also create their own tasks for themselves and mark them as completed. 
 
 Features of the application include: 
@@ -25,7 +26,7 @@ Currently working features:
 
 
 How to use (local):
-Clone the repository to your machine and move to its root folder.
+Clone the repository to your machine and move to its root folder. \ 
 Create an .env file create an .env file in the folder and set it as content:\
 DATABASE_URL=postgresql+psycopg2://
 SECRET_KEY=87dk98hlloiyuh
@@ -33,10 +34,7 @@ Next, activate the virtual environment and install the application's dependencie
 
 ```bash
 $ python3 -m venv venv
-```
-```
 $ source venv/bin/activate
-```
 $ pip install -r ./requirements.txt
-Then run flask using command 
+```
 $ flask run 
