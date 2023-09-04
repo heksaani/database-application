@@ -138,6 +138,8 @@ def assign_task(task_id):
         tasks.set_assigned_time(task_id, user_id)
         return redirect("/task/" + str(task_id))
 
+    return render_template("error.html", message="Unknown error")
+
 @app.route("/allTasks")
 def all_tasks():
     """List all tasks for the user logged in"""
@@ -236,7 +238,6 @@ def edit_task(task_id):
         return redirect("/task/" + str(task_id))
 
     return render_template("error.html", message="Unknown error")
-
 
 @app.route("/createGroup", methods=["GET", "POST"])
 def create_group():
@@ -365,9 +366,6 @@ def add_user():
         else:
             flash("User addition failed", 'error')
     return render_template("addUser.html", users=all_users, groups=users_all_groups)
-
-
-
 
 @app.route("/error")
 def error():

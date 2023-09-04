@@ -1,10 +1,16 @@
 <!DOCTYPE html>
 {% extends "layout.html" %} {% block content %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<style>
+  select#members option.selected {
+    background-color: #007bff;
+    color: white;
+  }
+</style>
 <div class="container">
   {% if session.username and session.role %}
   <div class="row">
-    <!-- Create Group Section -->
     <div class="col-md-6">
       <div class="card">
         <div class="card-body">
@@ -32,8 +38,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Add Members Section -->
     <div class="col-md-6">
       <div class="card">
         <div class="card-body">
@@ -74,6 +78,14 @@
       </div>
     </div>
   </div>
+  <script>
+    $(document).ready(function () {
+      $("#members option").click(function () {
+        $(this).toggleClass("selected");
+        $(this).prop("selected", $(this).hasClass("selected"));
+      });
+    });
+  </script>
 
   {% elif session.username %}
   <div class="alert alert-warning" role="alert">
