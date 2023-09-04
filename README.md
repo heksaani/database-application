@@ -24,15 +24,7 @@ Currently working features:
 8. Task can be edited (name, status, description, deadline, delete task)
 9. Can see time spent on task 
 
-
-How to use (local):
-Clone the repository to your machine and move to its root folder. \ 
-Create an .env file create an .env file in the folder and set it as content:\
-DATABASE_URL=postgresql+psycopg2://
-SECRET_KEY=87dk98hlloiyuh
-Next, activate the virtual environment and install the application's dependencies using the commands
-
-How to use (local): \
+How to use (local): 
 1. clone repository to your local machine
 ```bash
 $ git clone https://github.com/heksaani/database-application.git
